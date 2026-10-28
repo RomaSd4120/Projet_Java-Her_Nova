@@ -69,6 +69,10 @@ Les maquettes ont été conçues selon une charte graphique professionnelle déd
 │   ├── Frame5_Matching_Alertes.png
 │   └── Frame6_Planning_Saisonnier.png
 └── 📝 README.md
+
+
+---
+
 # Projet_Java-Her_Nova
 
 **Lien du repository GitHub :** [Projet Java-Her_Nova](https://github.com/RomaSd4120/Projet_Java-Her_Nova)
