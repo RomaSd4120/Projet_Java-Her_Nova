@@ -58,7 +58,7 @@ Les maquettes ont été conçues selon une charte graphique professionnelle déd
 ## 🎨 Prototype & UI Design (Figma)
 
 - **🔗 Lien du Prototype Interactif :** [Cliquez ici pour tester la maquette Figma]
-- https://www.figma.com/design/gRzqx04jBctT5In5F3SNiH/Sans-titre?node-id=0-1&t=9wIYUNYjMCLGak5F-1
+ https://www.figma.com/design/gRzqx04jBctT5In5F3SNiH/Sans-titre?node-id=0-1&t=9wIYUNYjMCLGak5F-1
 - **Charte & Cohérence UI/UX :** [AgriFlex_Cohérence et UXUI.pdf](./AgriFlex_Coh%C3%A9rence%20et%20UXUI.pdf)
 
 
