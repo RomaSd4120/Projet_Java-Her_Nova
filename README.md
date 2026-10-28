@@ -6,7 +6,8 @@
 ## 📌 Présentation du Projet
 **AgriFlex** est une solution digitale binationale (Espace Candidat & Back-Office KIBA) conçue pour structurer, accélérer et optimiser la gestion de la main-d'œuvre agricole non qualifiée au Maroc. La plateforme répond aux enjeux de pénurie saisonnière et de gestion des rotations d'ouvriers entre les grandes régions agricoles (Souss-Massa, Gharb, Oriental, etc.).
 
-* 📘 **Cahier des Charges :** [AgriFlex_Cahier de charge.pdf](./AgriFlex_Cahier%20de%20charge.pdf)
+
+ 📘 **Cahier des Charges :** [AgriFlex_Cahier de charge.pdf](./AgriFlex_Cahier%20de%20charge.pdf)
 
 ---
 
@@ -31,7 +32,8 @@ Un tableau de bord puissant pour le pilotage opérationnel en temps réel :
 * **Alertes Multi-canaux :** Déclenchement automatique des campagnes de recrutement par SMS, WhatsApp ou appel téléphonique.
 * **Planning Saisonnier :** Vue Gantt des récoltes pour planifier les rotations d'ouvriers à l'échelle nationale.
 
-* 🏗️ **Exigences & Architecture :** [AgriFlex_Exigences_Architecture.pdf](./AgriFlex_Exigences_Architecture.pdf)
+ 
+ 🏗️ **Exigences & Architecture :** [AgriFlex_Exigences_Architecture.pdf](./AgriFlex_Exigences_Architecture.pdf)
 
 ---
 
@@ -53,7 +55,7 @@ Les maquettes ont été conçues selon une charte graphique professionnelle déd
 
 - **🔗 Lien du Prototype Interactif :** [Cliquez ici pour tester la maquette Figma]
 - https://www.figma.com/design/gRzqx04jBctT5In5F3SNiH/Sans-titre?node-id=0-1&t=9wIYUNYjMCLGak5F-1
-* 🎨 **Charte & Cohérence UI/UX :** [AgriFlex_Cohérence et UXUI.pdf](./AgriFlex_Coh%C3%A9rence%20et%20UXUI.pdf)
+- 🎨 **Charte & Cohérence UI/UX :** [AgriFlex_Cohérence et UXUI.pdf](./AgriFlex_Coh%C3%A9rence%20et%20UXUI.pdf)
 
 
 ---
