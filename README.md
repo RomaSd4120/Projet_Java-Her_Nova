@@ -8,6 +8,7 @@
 
 
  📘 **Cahier des Charges :** [AgriFlex_Cahier de charge.pdf](./AgriFlex_Cahier%20de%20charge.pdf)
+ 📐 **Diagrammes & Conception :** [AgriFlex_Diagrammes.pdf](./AgriFlex_Diagrammes.pdf)
 
 ---
 
@@ -55,7 +56,7 @@ Les maquettes ont été conçues selon une charte graphique professionnelle déd
 
 - **🔗 Lien du Prototype Interactif :** [Cliquez ici pour tester la maquette Figma]
 - https://www.figma.com/design/gRzqx04jBctT5In5F3SNiH/Sans-titre?node-id=0-1&t=9wIYUNYjMCLGak5F-1
-- 🎨 **Charte & Cohérence UI/UX :** [AgriFlex_Cohérence et UXUI.pdf](./AgriFlex_Coh%C3%A9rence%20et%20UXUI.pdf)
+- **Charte & Cohérence UI/UX :** [AgriFlex_Cohérence et UXUI.pdf](./AgriFlex_Coh%C3%A9rence%20et%20UXUI.pdf)
 
 
 ---
