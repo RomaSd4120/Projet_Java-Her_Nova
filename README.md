@@ -38,13 +38,17 @@ Les maquettes ont été conçues selon une charte graphique professionnelle déd
 * **Standardisation :** Format Desktop 1440x1024 pour l'ensemble des écrans.
 
 ### 🖥️ Aperçu des Écrans Principaux :
-1. **Frame 1 — Connexion & OTP Candidat :** Interface d'accès rapide par téléphone.
-2. **Frame 2 — Espace Candidat :** Interface de disponibilité et propositions reçues.
-3. **Frame 3 — Dashboard KIBA Back-Office :** Vue d'ensemble opérationnelle et statistiques régionales.
-4. **Frame 4 — Matching & Création de Mission :** Module d'affectation intelligente et alerte SMS/WhatsApp.
-5. **Frame 5 — Planning & Vue Saisonnière :** Calendrier de rotation des équipes par culture.
+1. **Frame 1 – Page d'Accueil (Landing Page) :** Présentation générale de la plateforme, opportunités agricoles et bouton d'accès rapide.
+2. **Frame 2 — Connexion & OTP Candidat :** Interface d'accès rapide par téléphone.
+3. **Frame 3 — Espace Candidat :** Interface de disponibilité et propositions reçues.
+4. **Frame 4 — Dashboard KIBA Back-Office :** Vue d'ensemble opérationnelle et statistiques régionales.
+5. **Frame 5 — Matching & Création de Mission :** Module d'affectation intelligente et alerte SMS/WhatsApp.
+6. **Frame 6 — Planning & Vue Saisonnière :** Calendrier de rotation des équipes par culture.
 
-🔗 **[Cliquez ici pour consulter le projet interactif sur Figma]**
+## 🎨 Prototype & UI Design (Figma)
+
+- **🔗 Lien du Prototype Interactif :** [Cliquez ici pour tester la maquette Figma]https://www.figma.com/design/gRzqx04jBctT5In5F3SNiH/Sans-titre?node-id=0-1&t=9wIYUNYjMCLGak5F-1
+
 
 ---
 
@@ -57,19 +61,13 @@ Les maquettes ont été conçues selon une charte graphique professionnelle déd
 │   ├── Diagramme_Cas_Utilisation.png       # Interactions Utilisateurs - Système
 │   └── Diagramme_de_Classes.png            # Modélisation des entités et relations
 ├── 🎨 Maquettes_UI_Figma/
-│   ├── Frame1_Connexion.png
-│   ├── Frame2_Espace_Candidat.png
-│   ├── Frame3_Dashboard_KIBA.png
-│   ├── Frame4_Matching_Alertes.png
-│   └── Frame5_Planning_Saisonnier.png
-└── 📝 README.md                            # Synthèse et documentation du projet
-
-## 🎨 Prototype & UI Design (Figma)
-
-- **🔗 Lien du Prototype Interactif :** [Cliquez ici pour tester la maquette Figma]https://www.figma.com/design/gRzqx04jBctT5In5F3SNiH/Sans-titre?node-id=0-1&t=9wIYUNYjMCLGak5F-1
-
-
-
+│   ├── Frame1_Accueil.png
+│   ├── Frame2_Connexion.png
+│   ├── Frame3_Espace_Candidat.png
+│   ├── Frame4_Dashboard_KIBA.png
+│   ├── Frame5_Matching_Alertes.png
+│   └── Frame6_Planning_Saisonnier.png
+└── 📝 README.md
 # Projet_Java-Her_Nova
 
 **Lien du repository GitHub : https://github.com/RomaSd4120/Projet_Java-Her_Nova
