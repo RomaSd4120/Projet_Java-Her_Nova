@@ -7,6 +7,8 @@
 **AgriFlex** est une solution digitale binationale (Espace Candidat & Back-Office KIBA) conçue pour structurer, accélérer et optimiser la gestion de la main-d'œuvre agricole non qualifiée au Maroc. La plateforme répond aux enjeux de pénurie saisonnière et de gestion des rotations d'ouvriers entre les grandes régions agricoles (Souss-Massa, Gharb, Oriental, etc.).
 
 
+
+
  📘 **Cahier des Charges :** [AgriFlex_Cahier de charge.pdf](./AgriFlex_Cahier%20de%20charge.pdf)
  
  📐 **Diagrammes & Conception :** [AgriFlex_Diagrammes.pdf](./AgriFlex_Diagrammes.pdf)
