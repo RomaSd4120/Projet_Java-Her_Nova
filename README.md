@@ -38,7 +38,7 @@ Les maquettes ont été conçues selon une charte graphique professionnelle déd
 * **Standardisation :** Format Desktop 1440x1024 pour l'ensemble des écrans.
 
 ### 🖥️ Aperçu des Écrans Principaux :
-1. **Frame 1 – Page d'Accueil (Landing Page) :** Présentation générale de la plateforme, opportunités agricoles et bouton d'accès rapide.
+1. **Frame 1 — Page d'Accueil (Landing Page) :** Présentation générale de la plateforme, opportunités agricoles et bouton d'accès rapide.
 2. **Frame 2 — Connexion & OTP Candidat :** Interface d'accès rapide par téléphone.
 3. **Frame 3 — Espace Candidat :** Interface de disponibilité et propositions reçues.
 4. **Frame 4 — Dashboard KIBA Back-Office :** Vue d'ensemble opérationnelle et statistiques régionales.
@@ -47,7 +47,8 @@ Les maquettes ont été conçues selon une charte graphique professionnelle déd
 
 ## 🎨 Prototype & UI Design (Figma)
 
-- **🔗 Lien du Prototype Interactif :** [Cliquez ici pour tester la maquette Figma]https://www.figma.com/design/gRzqx04jBctT5In5F3SNiH/Sans-titre?node-id=0-1&t=9wIYUNYjMCLGak5F-1
+- **🔗 Lien du Prototype Interactif :** [Cliquez ici pour tester la maquette Figma]
+- https://www.figma.com/design/gRzqx04jBctT5In5F3SNiH/Sans-titre?node-id=0-1&t=9wIYUNYjMCLGak5F-1
 
 
 ---
@@ -70,4 +71,4 @@ Les maquettes ont été conçues selon une charte graphique professionnelle déd
 └── 📝 README.md
 # Projet_Java-Her_Nova
 
-**Lien du repository GitHub : https://github.com/RomaSd4120/Projet_Java-Her_Nova
+**Lien du repository GitHub :** [Projet Java-Her_Nova](https://github.com/RomaSd4120/Projet_Java-Her_Nova)
