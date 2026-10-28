@@ -64,6 +64,12 @@ Les maquettes ont été conçues selon une charte graphique professionnelle déd
 │   └── Frame5_Planning_Saisonnier.png
 └── 📝 README.md                            # Synthèse et documentation du projet
 
+## 🎨 Prototype & UI Design (Figma)
+
+- **🔗 Lien du Prototype Interactif :** [Cliquez ici pour tester la maquette Figma]https://www.figma.com/design/gRzqx04jBctT5In5F3SNiH/Sans-titre?node-id=0-1&t=9wIYUNYjMCLGak5F-1
+
+
+
 # Projet_Java-Her_Nova
 
 **Lien du repository GitHub : https://github.com/RomaSd4120/Projet_Java-Her_Nova
