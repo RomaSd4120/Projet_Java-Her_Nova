@@ -1,4 +1,4 @@
-package com.agriflex.model;
+package com.agriflex.projet.model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
