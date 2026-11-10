@@ -14,7 +14,7 @@ Le système repose sur deux piliers ergonomiques adaptés aux profils utilisateu
 
 ### 1. Espace Candidat (Ouvriers Agricoles)
 Conçu pour une accessibilité maximale et une prise en main ultra-simple sans prérequis techniques :
-* **Connexion simplifiée :** Authentification par numéro de téléphone et code OTP (sans mot de passe).
+* **Connexion sécurisée & simplifiée :** Authentification renforcée combinant le numéro de CINE (Carte d'Identité Nationale) et un numéro de téléphone avec vérification par code OTP (sans mot de passe complexe).
 * **Gestion du statut :** Mise à jour instantanée de la disponibilité ("Disponible" / "Indisponible") et choix de la région actuelle.
 * **Offres de mission :** Consultation et réponse en 1-clic ("Accepter" / "Refuser") aux propositions de travail.
 
