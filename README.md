@@ -22,9 +22,9 @@ Conçu pour une accessibilité maximale et une prise en main ultra-simple sans p
 * **Formulaire Hybride :** Champs texte classiques disponibles pour les candidats lettrés.
 
 ### 2. Back-Office KIBA (Recruteurs & Gestionnaires)
-Un tableau de bord puissant pour le pilotage opérationnel en temps réel[cite: 9] :
-* **Dashboard Analytics :** Suivi des KPIs (Ouvriers inscrits, disponibles, missions en cours, taux de réaffectation)[cite: 9].
-* **Cartographie Régionale :** Visualisation de la répartition géographique de la main-d'œuvre[cite: 9].
+Un tableau de bord puissant pour le pilotage opérationnel en temps réel :
+* **Dashboard Analytics :** Suivi des KPIs (Ouvriers inscrits, disponibles, missions en cours, taux de réaffectation).
+* **Cartographie Régionale :** Visualisation de la répartition géographique de la main-d'œuvre.
 * **Matching Algorithmique :** Filtrage instantané des candidats selon les critères des exploitations (localisation, disponibilité, compétences).
 * **Alertes Multi-canaux :** Déclenchement automatique des campagnes de recrutement par SMS et WhatsApp.
 * **Planning Saisonnier :** Vue Gantt des récoltes pour planifier les rotations d'ouvriers à l'échelle nationale.
@@ -33,18 +33,19 @@ Un tableau de bord puissant pour le pilotage opérationnel en temps réel[cite: 
 
 ## Prototypes & Maquettes UI/UX (Figma)
 
-Les maquettes ont été conçues selon une charte graphique professionnelle dédiée au secteur agricole[cite: 9] :
-* **Palette de couleurs :** Vert Agriculture (`#2E7D32`), Slate Foncé (`#1E293B`), Fond Neutre (`#F8FAFC`)[cite: 9].
+Les maquettes ont été conçues selon une charte graphique professionnelle dédiée au secteur agricole :
+* **Palette de couleurs :** Vert Agriculture (`#2E7D32`), Slate Foncé (`#1E293B`), Fond Neutre (`#F8FAFC`).
 * **Standardisation :** Format Desktop 1440x1024 pour l'ensemble des écrans.
 
 ### Aperçu des Écrans Principaux :
-1. **Frame 1 — Connexion & OTP Candidat :** Interface d'accès rapide par téléphone[cite: 9].
+1. **Frame 1 — Connexion & OTP Candidat :** Interface d'accès rapide par téléphone.
 2. **Frame 2 — Espace Candidat :** Interface de disponibilité et propositions reçues.
-3. **Frame 3 — Dashboard KIBA Back-Office :** Vue d'ensemble opérationnelle et statistiques régionales[cite: 9].
+3. **Frame 3 — Dashboard KIBA Back-Office :** Vue d'ensemble opérationnelle et statistiques régionales.
 4. **Frame 4 — Matching & Création de Mission :** Module d'affectation intelligente et alerte SMS/WhatsApp.
 5. **Frame 5 — Planning & Vue Saisonnière :** Calendrier de rotation des équipes par culture.
 
-🔗 **[Cliquez ici pour consulter le projet interactif sur Figma](VOTRE_LIEN_FIGMA_ICI)**
+- **🔗 Lien du Prototype Interactif :** [Cliquez ici pour tester la maquette Figma]
+  https://www.figma.com/design/gRzqx04jBctT5In5F3SNiH/Sans-titre?node-id=0-1&t=9wIYUNYjMCLGak5F-1
 
 ---
 
