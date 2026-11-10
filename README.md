@@ -17,6 +17,9 @@ Conçu pour une accessibilité maximale et une prise en main ultra-simple sans p
 * **Connexion sécurisée & simplifiée :** Authentification renforcée combinant le numéro de CINE (Carte d'Identité Nationale) et un numéro de téléphone avec vérification par code OTP (sans mot de passe complexe).
 * **Gestion du statut :** Mise à jour instantanée de la disponibilité ("Disponible" / "Indisponible") et choix de la région actuelle.
 * **Offres de mission :** Consultation et réponse en 1-clic ("Accepter" / "Refuser") aux propositions de travail.
+* **Sélection visuelle par Icônes :** Choix des compétences (Récolte de tomates , Cueillette des agrumes , Conduite de tracteur ) via des cartes illustrées sans saisie textuelle obligatoire.
+* **Profil Audio / Note Vocale :** Intégration d'un bouton d'enregistrement vocal permettant aux ouvriers non-lettrés de présenter leur parcours oralement.
+* **Formulaire Hybride :** Champs texte classiques disponibles pour les candidats lettrés.
 
 ### 2. Back-Office KIBA (Recruteurs & Gestionnaires)
 Un tableau de bord puissant pour le pilotage opérationnel en temps réel[cite: 9] :
