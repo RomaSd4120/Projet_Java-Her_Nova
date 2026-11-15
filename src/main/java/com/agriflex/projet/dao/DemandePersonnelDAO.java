@@ -1,6 +1,7 @@
 
 package com.agriflex.projet.dao;
 
+import com.agriflex.projet.util.Singleton;
 import com.agriflex.projet.model.DemandePersonnel;
 
 import java.sql.Connection;

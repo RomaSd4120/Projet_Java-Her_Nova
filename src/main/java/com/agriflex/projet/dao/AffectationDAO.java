@@ -2,6 +2,7 @@
 package com.agriflex.projet.dao;
 
 import com.agriflex.projet.model.Affectation;
+import com.agriflex.projet.util.Singleton;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

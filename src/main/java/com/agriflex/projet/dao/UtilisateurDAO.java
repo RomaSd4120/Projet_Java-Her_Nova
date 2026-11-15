@@ -2,6 +2,7 @@
 package com.agriflex.projet.dao;
 
 import com.agriflex.projet.model.Utilisateur;
+import com.agriflex.projet.util.Singleton;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -205,6 +206,29 @@ public class UtilisateurDAO implements DAO<Utilisateur> {
         }
 
         return 0;
+    }
+    public Utilisateur findByCinAndPhone(String cin, String telephone) {
+    String sql = "SELECT * FROM utilisateur WHERE cin = ? AND telephone = ?";
+    try (Connection conn = Singleton.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        stmt.setString(1, cin);
+        stmt.setString(2, telephone);
+        ResultSet rs = stmt.executeQuery();
+        
+        if (rs.next()) {
+            Utilisateur u = new Utilisateur();
+            u.setId(rs.getInt("id"));
+            u.setNom(rs.getString("nom"));
+            u.setPrenom(rs.getString("prenom"));
+            u.setCin(rs.getString("cin"));
+            u.setTelephone(rs.getString("telephone"));
+            return u;
+        }
+    } catch (SQLException e) {
+        System.err.println("Erreur lors de la recherche par CIN/Téléphone : " + e.getMessage());
+    }
+    return null;
     }
 
     // Conversion du ResultSet vers un objet Utilisateur
