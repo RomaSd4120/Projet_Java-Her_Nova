@@ -1,7 +1,7 @@
 package com.agriflex.projet.dao;
 
 import com.agriflex.projet.model.Competence;
-import com.agriflex.projet.util.DBConnection; // Vérifier l'import dyal la connexion
+import com.agriflex.projet.util.Singleton;
 
 import java.sql.*;
 import java.util.ArrayList;
