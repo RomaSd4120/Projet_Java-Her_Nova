@@ -1,7 +1,7 @@
 package com.agriflex.projet.dao;
 
 import com.agriflex.projet.model.Disponibilite;
-import com.agriflex.projet.util.DBConnection;
+import com.agriflex.projet.util.Singleton;
 
 import java.sql.*;
 import java.util.ArrayList;
