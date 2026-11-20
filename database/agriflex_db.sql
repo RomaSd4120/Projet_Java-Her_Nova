@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS competence (
     FOREIGN KEY (id_travailleur) REFERENCES travailleur(id_candidat) ON DELETE CASCADE
 );
 
--- 10. Table des Disponibilités saisonnières des travailleurs
+-- 10. Table des Disponibilités saisonnières des travailleur
 CREATE TABLE IF NOT EXISTS disponibilite (
     id_disponibilite INT AUTO_INCREMENT PRIMARY KEY,
     id_travailleur INT NOT NULL,
