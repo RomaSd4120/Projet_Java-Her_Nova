@@ -95,6 +95,15 @@ public class CompetenceDAO implements DAO<Competence> {
         }
     }
 
+    @Override
+    public long count() {
+        return findAll().size();
+    }
+
+    @Override
+    public boolean exists(int id) {
+        return findById(id) != null;
+    }
     // Méthode spécifique pour récupérer les compétences d'un travailleur
     public List<Competence> getByTravailleur(int idTravailleur) {
         List<Competence> liste = new ArrayList<>();

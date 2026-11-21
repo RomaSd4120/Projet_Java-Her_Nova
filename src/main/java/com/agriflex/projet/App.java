@@ -1,6 +1,6 @@
 package com.agriflex.projet;
 
-import com.agriflex.projet.dao.Singleton;
+import com.agriflex.projet.util.Singleton;
 import java.sql.Connection;
 
 public class App {
