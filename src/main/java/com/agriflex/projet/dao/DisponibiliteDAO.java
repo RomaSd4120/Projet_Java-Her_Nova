@@ -98,6 +98,15 @@ public class DisponibiliteDAO implements DAO<Disponibilite> {
             return false;
         }
     }
+    @Override
+    public long count() {
+        return findAll().size();
+    }
+
+    @Override
+    public boolean exists(int id) {
+        return findById(id) != null;
+    }
 
     // Méthodes spécifiques au planning saisonnier des travailleurs
     public List<Disponibilite> getByTravailleur(int idTravailleur) {

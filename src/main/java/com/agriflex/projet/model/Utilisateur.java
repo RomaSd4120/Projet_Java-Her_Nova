@@ -64,4 +64,17 @@ public class Utilisateur {
     public int hashCode() {
         return Objects.hash(idUtilisateur, telephone);
     }
+    private String cin;
+
+    public String getCin() {
+        return cin;
+    }
+
+    public void setCin(String cin) {
+        this.cin = cin;
+    }
+
+    public void setId(int id) {
+        this.idUtilisateur = id;
+    }
 }

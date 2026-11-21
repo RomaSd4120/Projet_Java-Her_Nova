@@ -99,7 +99,15 @@ public class CodeOTPDAO implements DAO<CodeOTP> {
             return false;
         }
     }
+    @Override
+    public long count() {
+        return findAll().size();
+    }
 
+    @Override
+    public boolean exists(int id) {
+        return findById(id) != null;
+    }
     // Méthodes spécifiques pour l'authentification SMS
     public CodeOTP verifierCode(String telephone, String code) {
         String sql = "SELECT * FROM code_otp WHERE telephone = ? AND code = ? AND est_utilise = FALSE ORDER BY id_otp DESC LIMIT 1";
