@@ -1,28 +1,33 @@
-
 package com.agriflex.projet.dao;
 
-import com.agriflex.projet.model.Affectation;
-import com.agriflex.projet.util.Singleton;
-
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.SQLException;
-import java.sql.Date;
+import java.sql.Statement;
+import java.sql.Types;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.agriflex.projet.model.Affectation;
+import com.agriflex.projet.util.GestionnaireErreurBDD;
+import com.agriflex.projet.util.Singleton;
 
 public class AffectationDAO implements DAO<Affectation> {
 
     @Override
     public boolean create(Affectation affectation) {
+        if (affectation == null) {
+            return false;
+        }
+
         String sql = "INSERT INTO affectation "
                 + "(id_candidat, id_mission, date_proposition, statut) "
                 + "VALUES (?, ?, ?, ?)";
 
-        Connection conn = Singleton.getConnection();
-        if (conn == null) return false;
+        Connection conn = Singleton.getConnectionOuLeverException("AffectationDAO.create");
 
         try (PreparedStatement stmt = conn.prepareStatement(
                 sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -31,7 +36,7 @@ public class AffectationDAO implements DAO<Affectation> {
             stmt.setInt(2, affectation.getIdMission());
 
             if (affectation.getDateProposition() == null) {
-                stmt.setNull(3, java.sql.Types.DATE);
+                stmt.setNull(3, Types.DATE);
             } else {
                 stmt.setDate(3, Date.valueOf(affectation.getDateProposition()));
             }
@@ -46,20 +51,18 @@ public class AffectationDAO implements DAO<Affectation> {
                 }
                 return true;
             }
+            return false;
 
         } catch (SQLException e) {
-            System.err.println("Erreur create Affectation : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("AffectationDAO.create", e);
         }
-
-        return false;
     }
 
     @Override
     public Affectation findById(int id) {
         String sql = "SELECT * FROM affectation WHERE id_affectation = ?";
 
-        Connection conn = Singleton.getConnection();
-        if (conn == null) return null;
+        Connection conn = Singleton.getConnectionOuLeverException("AffectationDAO.findById");
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -69,12 +72,11 @@ public class AffectationDAO implements DAO<Affectation> {
                     return mapResultSet(rs);
                 }
             }
+            return null;
 
         } catch (SQLException e) {
-            System.err.println("Erreur findById Affectation : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("AffectationDAO.findById", e);
         }
-
-        return null;
     }
 
     @Override
@@ -82,8 +84,7 @@ public class AffectationDAO implements DAO<Affectation> {
         List<Affectation> affectations = new ArrayList<>();
         String sql = "SELECT * FROM affectation";
 
-        Connection conn = Singleton.getConnection();
-        if (conn == null) return affectations;
+        Connection conn = Singleton.getConnectionOuLeverException("AffectationDAO.findAll");
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -91,21 +92,23 @@ public class AffectationDAO implements DAO<Affectation> {
             while (rs.next()) {
                 affectations.add(mapResultSet(rs));
             }
+            return affectations;
 
         } catch (SQLException e) {
-            System.err.println("Erreur findAll Affectation : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("AffectationDAO.findAll", e);
         }
-
-        return affectations;
     }
 
     @Override
     public boolean update(Affectation affectation) {
+        if (affectation == null) {
+            return false;
+        }
+
         String sql = "UPDATE affectation SET id_candidat = ?, id_mission = ?, "
                 + "date_proposition = ?, statut = ? WHERE id_affectation = ?";
 
-        Connection conn = Singleton.getConnection();
-        if (conn == null) return false;
+        Connection conn = Singleton.getConnectionOuLeverException("AffectationDAO.update");
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -113,7 +116,7 @@ public class AffectationDAO implements DAO<Affectation> {
             stmt.setInt(2, affectation.getIdMission());
 
             if (affectation.getDateProposition() == null) {
-                stmt.setNull(3, java.sql.Types.DATE);
+                stmt.setNull(3, Types.DATE);
             } else {
                 stmt.setDate(3, Date.valueOf(affectation.getDateProposition()));
             }
@@ -124,36 +127,30 @@ public class AffectationDAO implements DAO<Affectation> {
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.err.println("Erreur update Affectation : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("AffectationDAO.update", e);
         }
-
-        return false;
     }
 
     @Override
     public boolean delete(int id) {
         String sql = "DELETE FROM affectation WHERE id_affectation = ?";
 
-        Connection conn = Singleton.getConnection();
-        if (conn == null) return false;
+        Connection conn = Singleton.getConnectionOuLeverException("AffectationDAO.delete");
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.err.println("Erreur delete Affectation : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("AffectationDAO.delete", e);
         }
-
-        return false;
     }
 
     @Override
     public boolean exists(int id) {
         String sql = "SELECT 1 FROM affectation WHERE id_affectation = ?";
 
-        Connection conn = Singleton.getConnection();
-        if (conn == null) return false;
+        Connection conn = Singleton.getConnectionOuLeverException("AffectationDAO.exists");
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -163,18 +160,15 @@ public class AffectationDAO implements DAO<Affectation> {
             }
 
         } catch (SQLException e) {
-            System.err.println("Erreur exists Affectation : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("AffectationDAO.exists", e);
         }
-
-        return false;
     }
 
     @Override
     public long count() {
         String sql = "SELECT COUNT(*) FROM affectation";
 
-        Connection conn = Singleton.getConnection();
-        if (conn == null) return 0;
+        Connection conn = Singleton.getConnectionOuLeverException("AffectationDAO.count");
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -182,12 +176,48 @@ public class AffectationDAO implements DAO<Affectation> {
             if (rs.next()) {
                 return rs.getLong(1);
             }
+            return 0L;
 
         } catch (SQLException e) {
-            System.err.println("Erreur count Affectation : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("AffectationDAO.count", e);
+        }
+    }
+
+    public boolean aUnConflitDeDates(int idCandidat, LocalDate debut, LocalDate fin) {
+        if (debut == null && fin == null) {
+            return false;
+        }
+        LocalDate dateDebut = (debut != null) ? debut : fin;
+        LocalDate dateFin = (fin != null) ? fin : debut;
+        if (dateDebut.isAfter(dateFin)) {
+            LocalDate temp = dateDebut;
+            dateDebut = dateFin;
+            dateFin = temp;
         }
 
-        return 0;
+        String sql = "SELECT COUNT(*) FROM affectation a "
+                + "JOIN demande_personnel d ON a.id_mission = d.id_mission "
+                + "WHERE a.id_candidat = ? AND UPPER(TRIM(a.statut)) IN ('PROPOSEE', 'ACCEPTEE') "
+                + "AND d.date_debut IS NOT NULL AND d.date_fin IS NOT NULL "
+                + "AND d.date_debut <= ? AND d.date_fin >= ?";
+
+        Connection conn = Singleton.getConnectionOuLeverException("AffectationDAO.aUnConflitDeDates");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idCandidat);
+            stmt.setDate(2, Date.valueOf(dateFin));
+            stmt.setDate(3, Date.valueOf(dateDebut));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+            return false;
+
+        } catch (SQLException e) {
+            throw GestionnaireErreurBDD.traduireException("AffectationDAO.aUnConflitDeDates", e);
+        }
     }
 
     private Affectation mapResultSet(ResultSet rs) throws SQLException {

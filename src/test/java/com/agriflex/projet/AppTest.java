@@ -1,5 +1,16 @@
 package com.agriflex.projet;
 
+import java.sql.Connection;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+
 import com.agriflex.projet.dao.UtilisateurDAO;
 import com.agriflex.projet.model.DemandePersonnel;
 import com.agriflex.projet.model.Travailleur;
@@ -7,12 +18,6 @@ import com.agriflex.projet.model.Utilisateur;
 import com.agriflex.projet.service.AuthService;
 import com.agriflex.projet.service.MatchingService;
 import com.agriflex.projet.util.Singleton;
-
-import org.junit.Test;
-import static org.junit.Assert.*;
-
-import java.sql.Connection;
-import java.util.List;
 
 public class AppTest {
 
@@ -40,16 +45,17 @@ public class AppTest {
     @Test
     public void testAuthServiceOtp() {
         AuthService authService = new AuthService();
+        String telephone = "0612345678";
 
         // Vérification de la génération d'un code OTP à 4 chiffres
-        String otp = authService.genererCodeOTP();
+        String otp = authService.genererCodeOTP(telephone);
         assertNotNull("Le code OTP ne doit pas être null", otp);
         assertEquals("Le code OTP doit contenir exactement 4 chiffres", 4, otp.length());
         assertTrue("Le code OTP doit être uniquement numérique", otp.matches("\\d{4}"));
 
         // Vérification de la validation OTP
-        assertTrue("La validation doit réussir avec le bon code", authService.validerOTP(otp, otp));
-        assertFalse("La validation doit échouer avec un mauvais code", authService.validerOTP("0000", otp));
+        assertTrue("La validation doit réussir avec le bon code", authService.validerOTP(telephone, otp));
+        assertFalse("La validation doit échouer avec un mauvais code", authService.validerOTP(telephone, "0000"));
     }
 
     // 4. Test de la couche Service : MatchingService (Filtrage disponibilité + compétence + effectif)

@@ -1,128 +1,162 @@
 package com.agriflex.projet.dao;
 
-import com.agriflex.projet.model.Competence;
-import com.agriflex.projet.util.Singleton;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.agriflex.projet.model.Competence;
+import com.agriflex.projet.util.GestionnaireErreurBDD;
+import com.agriflex.projet.util.Singleton;
 
 public class CompetenceDAO implements DAO<Competence> {
 
     @Override
     public boolean create(Competence competence) {
-        String sql = "INSERT INTO competence (nom_competence, description, id_travailleur) VALUES (?, ?, ?)";
-        try (Connection conn = Singleton.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, competence.getNomCompetence());
-            ps.setString(2, competence.getDescription());
-            ps.setInt(3, competence.getIdTravailleur());
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (competence == null) {
             return false;
+        }
+        String sql = "INSERT INTO competence (nom_competence, description, id_travailleur) VALUES (?, ?, ?)";
+        Connection conn = Singleton.getConnectionOuLeverException("CompetenceDAO.create");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, competence.getNomCompetence());
+            stmt.setString(2, competence.getDescription());
+            stmt.setInt(3, competence.getIdTravailleur());
+
+            if (stmt.executeUpdate() > 0) {
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        competence.setIdCompetence(rs.getInt(1));
+                    }
+                }
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            throw GestionnaireErreurBDD.traduireException("CompetenceDAO.create", e);
         }
     }
 
     @Override
     public Competence findById(int id) {
         String sql = "SELECT * FROM competence WHERE id_competence = ?";
-        try (Connection conn = Singleton.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return new Competence(
-                    rs.getInt("id_competence"),
-                    rs.getString("nom_competence"),
-                    rs.getString("description"),
-                    rs.getInt("id_travailleur")
-                );
+        Connection conn = Singleton.getConnectionOuLeverException("CompetenceDAO.findById");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next() ? mapResultSet(rs) : null;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw GestionnaireErreurBDD.traduireException("CompetenceDAO.findById", e);
         }
-        return null;
     }
 
     @Override
     public List<Competence> findAll() {
         List<Competence> liste = new ArrayList<>();
-        String sql = "SELECT * FROM competence";
-        try (Connection conn = Singleton.getConnection();
-             Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
+        String sql = "SELECT * FROM competence ORDER BY nom_competence";
+        Connection conn = Singleton.getConnectionOuLeverException("CompetenceDAO.findAll");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                liste.add(new Competence(
-                    rs.getInt("id_competence"),
-                    rs.getString("nom_competence"),
-                    rs.getString("description"),
-                    rs.getInt("id_travailleur")
-                ));
+                liste.add(mapResultSet(rs));
             }
+            return liste;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw GestionnaireErreurBDD.traduireException("CompetenceDAO.findAll", e);
         }
-        return liste;
     }
 
     @Override
     public boolean update(Competence competence) {
-        String sql = "UPDATE competence SET nom_competence = ?, description = ?, id_travailleur = ? WHERE id_competence = ?";
-        try (Connection conn = Singleton.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, competence.getNomCompetence());
-            ps.setString(2, competence.getDescription());
-            ps.setInt(3, competence.getIdTravailleur());
-            ps.setInt(4, competence.getIdCompetence());
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (competence == null) {
             return false;
+        }
+        String sql = "UPDATE competence SET nom_competence = ?, description = ?, id_travailleur = ? WHERE id_competence = ?";
+        Connection conn = Singleton.getConnectionOuLeverException("CompetenceDAO.update");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, competence.getNomCompetence());
+            stmt.setString(2, competence.getDescription());
+            stmt.setInt(3, competence.getIdTravailleur());
+            stmt.setInt(4, competence.getIdCompetence());
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw GestionnaireErreurBDD.traduireException("CompetenceDAO.update", e);
         }
     }
 
     @Override
-    public boolean delete(int idCompetence) {
+    public boolean delete(int id) {
         String sql = "DELETE FROM competence WHERE id_competence = ?";
-        try (Connection conn = Singleton.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, idCompetence);
-            return ps.executeUpdate() > 0;
+        Connection conn = Singleton.getConnectionOuLeverException("CompetenceDAO.delete");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw GestionnaireErreurBDD.traduireException("CompetenceDAO.delete", e);
+        }
+    }
+
+    @Override
+    public boolean exists(int id) {
+        String sql = "SELECT 1 FROM competence WHERE id_competence = ?";
+        Connection conn = Singleton.getConnectionOuLeverException("CompetenceDAO.exists");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw GestionnaireErreurBDD.traduireException("CompetenceDAO.exists", e);
         }
     }
 
     @Override
     public long count() {
-        return findAll().size();
+        String sql = "SELECT COUNT(*) FROM competence";
+        Connection conn = Singleton.getConnectionOuLeverException("CompetenceDAO.count");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            return rs.next() ? rs.getLong(1) : 0L;
+        } catch (SQLException e) {
+            throw GestionnaireErreurBDD.traduireException("CompetenceDAO.count", e);
+        }
     }
 
-    @Override
-    public boolean exists(int id) {
-        return findById(id) != null;
-    }
-    // Méthode spécifique pour récupérer les compétences d'un travailleur
-    public List<Competence> getByTravailleur(int idTravailleur) {
+    public List<Competence> findByTravailleurId(int idTravailleur) {
         List<Competence> liste = new ArrayList<>();
-        String sql = "SELECT * FROM competence WHERE id_travailleur = ?";
-        try (Connection conn = Singleton.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, idTravailleur);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                liste.add(new Competence(
-                    rs.getInt("id_competence"),
-                    rs.getString("nom_competence"),
-                    rs.getString("description"),
-                    rs.getInt("id_travailleur")
-                ));
+        String sql = "SELECT * FROM competence WHERE id_travailleur = ? ORDER BY nom_competence";
+        Connection conn = Singleton.getConnectionOuLeverException("CompetenceDAO.findByTravailleurId");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idTravailleur);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    liste.add(mapResultSet(rs));
+                }
             }
+            return liste;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw GestionnaireErreurBDD.traduireException("CompetenceDAO.findByTravailleurId", e);
         }
-        return liste;
+    }
+
+    private Competence mapResultSet(ResultSet rs) throws SQLException {
+        Competence c = new Competence();
+        c.setIdCompetence(rs.getInt("id_competence"));
+        c.setNomCompetence(rs.getString("nom_competence"));
+        c.setDescription(rs.getString("description"));
+        c.setIdTravailleur(rs.getInt("id_travailleur"));
+        return c;
     }
 }

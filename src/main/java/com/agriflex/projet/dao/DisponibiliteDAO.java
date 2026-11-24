@@ -1,146 +1,194 @@
 package com.agriflex.projet.dao;
 
-import com.agriflex.projet.model.Disponibilite;
-import com.agriflex.projet.util.Singleton;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.agriflex.projet.model.Disponibilite;
+import com.agriflex.projet.util.GestionnaireErreurBDD;
+import com.agriflex.projet.util.Singleton;
 
 public class DisponibiliteDAO implements DAO<Disponibilite> {
 
     @Override
-    public boolean create(Disponibilite disp) {
-        String sql = "INSERT INTO disponibilite (id_travailleur, date_debut, date_fin, statut) VALUES (?, ?, ?, ?)";
-        try (Connection conn = Singleton.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, disp.getIdTravailleur());
-            ps.setDate(2, Date.valueOf(disp.getDateDebut()));
-            ps.setDate(3, Date.valueOf(disp.getDateFin()));
-            ps.setString(4, disp.getStatut());
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public boolean create(Disponibilite disponibilite) {
+        if (disponibilite == null) {
             return false;
+        }
+        String sql = "INSERT INTO disponibilite (id_travailleur, date_debut, date_fin, statut) VALUES (?, ?, ?, ?)";
+        Connection conn = Singleton.getConnectionOuLeverException("DisponibiliteDAO.create");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, disponibilite.getIdTravailleur());
+
+            if (disponibilite.getDateDebut() == null) {
+                stmt.setNull(2, Types.DATE);
+            } else {
+                stmt.setDate(2, Date.valueOf(disponibilite.getDateDebut()));
+            }
+
+            if (disponibilite.getDateFin() == null) {
+                stmt.setNull(3, Types.DATE);
+            } else {
+                stmt.setDate(3, Date.valueOf(disponibilite.getDateFin()));
+            }
+
+            stmt.setString(4, disponibilite.getStatut());
+
+            if (stmt.executeUpdate() > 0) {
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        disponibilite.setIdDisponibilite(rs.getInt(1));
+                    }
+                }
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            throw GestionnaireErreurBDD.traduireException("DisponibiliteDAO.create", e);
         }
     }
 
     @Override
     public Disponibilite findById(int id) {
         String sql = "SELECT * FROM disponibilite WHERE id_disponibilite = ?";
-        try (Connection conn = Singleton.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return new Disponibilite(
-                    rs.getInt("id_disponibilite"),
-                    rs.getInt("id_travailleur"),
-                    rs.getDate("date_debut").toLocalDate(),
-                    rs.getDate("date_fin").toLocalDate(),
-                    rs.getString("statut")
-                );
+        Connection conn = Singleton.getConnectionOuLeverException("DisponibiliteDAO.findById");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next() ? mapResultSet(rs) : null;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw GestionnaireErreurBDD.traduireException("DisponibiliteDAO.findById", e);
         }
-        return null;
     }
 
     @Override
     public List<Disponibilite> findAll() {
         List<Disponibilite> liste = new ArrayList<>();
-        String sql = "SELECT * FROM disponibilite";
-        try (Connection conn = Singleton.getConnection();
-             Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
+        String sql = "SELECT * FROM disponibilite ORDER BY date_debut DESC";
+        Connection conn = Singleton.getConnectionOuLeverException("DisponibiliteDAO.findAll");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                liste.add(new Disponibilite(
-                    rs.getInt("id_disponibilite"),
-                    rs.getInt("id_travailleur"),
-                    rs.getDate("date_debut").toLocalDate(),
-                    rs.getDate("date_fin").toLocalDate(),
-                    rs.getString("statut")
-                ));
+                liste.add(mapResultSet(rs));
             }
+            return liste;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw GestionnaireErreurBDD.traduireException("DisponibiliteDAO.findAll", e);
         }
-        return liste;
     }
 
     @Override
-    public boolean update(Disponibilite disp) {
+    public boolean update(Disponibilite disponibilite) {
+        if (disponibilite == null) {
+            return false;
+        }
         String sql = "UPDATE disponibilite SET id_travailleur = ?, date_debut = ?, date_fin = ?, statut = ? WHERE id_disponibilite = ?";
-        try (Connection conn = Singleton.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, disp.getIdTravailleur());
-            ps.setDate(2, Date.valueOf(disp.getDateDebut()));
-            ps.setDate(3, Date.valueOf(disp.getDateFin()));
-            ps.setString(4, disp.getStatut());
-            ps.setInt(5, disp.getIdDisponibilite());
-            return ps.executeUpdate() > 0;
+        Connection conn = Singleton.getConnectionOuLeverException("DisponibiliteDAO.update");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, disponibilite.getIdTravailleur());
+
+            if (disponibilite.getDateDebut() == null) {
+                stmt.setNull(2, Types.DATE);
+            } else {
+                stmt.setDate(2, Date.valueOf(disponibilite.getDateDebut()));
+            }
+
+            if (disponibilite.getDateFin() == null) {
+                stmt.setNull(3, Types.DATE);
+            } else {
+                stmt.setDate(3, Date.valueOf(disponibilite.getDateFin()));
+            }
+
+            stmt.setString(4, disponibilite.getStatut());
+            stmt.setInt(5, disponibilite.getIdDisponibilite());
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw GestionnaireErreurBDD.traduireException("DisponibiliteDAO.update", e);
         }
     }
 
     @Override
-    public boolean delete(int idDisponibilite) {
+    public boolean delete(int id) {
         String sql = "DELETE FROM disponibilite WHERE id_disponibilite = ?";
-        try (Connection conn = Singleton.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, idDisponibilite);
-            return ps.executeUpdate() > 0;
+        Connection conn = Singleton.getConnectionOuLeverException("DisponibiliteDAO.delete");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw GestionnaireErreurBDD.traduireException("DisponibiliteDAO.delete", e);
         }
-    }
-    @Override
-    public long count() {
-        return findAll().size();
     }
 
     @Override
     public boolean exists(int id) {
-        return findById(id) != null;
-    }
+        String sql = "SELECT 1 FROM disponibilite WHERE id_disponibilite = ?";
+        Connection conn = Singleton.getConnectionOuLeverException("DisponibiliteDAO.exists");
 
-    // Méthodes spécifiques au planning saisonnier des travailleurs
-    public List<Disponibilite> getByTravailleur(int idTravailleur) {
-        List<Disponibilite> liste = new ArrayList<>();
-        String sql = "SELECT * FROM disponibilite WHERE id_travailleur = ?";
-        try (Connection conn = Singleton.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, idTravailleur);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                liste.add(new Disponibilite(
-                    rs.getInt("id_disponibilite"),
-                    rs.getInt("id_travailleur"),
-                    rs.getDate("date_debut").toLocalDate(),
-                    rs.getDate("date_fin").toLocalDate(),
-                    rs.getString("statut")
-                ));
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw GestionnaireErreurBDD.traduireException("DisponibiliteDAO.exists", e);
         }
-        return liste;
     }
 
-    public boolean updateStatut(int idDisponibilite, String nouveauStatut) {
-        String sql = "UPDATE disponibilite SET statut = ? WHERE id_disponibilite = ?";
-        try (Connection conn = Singleton.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, nouveauStatut);
-            ps.setInt(2, idDisponibilite);
-            return ps.executeUpdate() > 0;
+    @Override
+    public long count() {
+        String sql = "SELECT COUNT(*) FROM disponibilite";
+        Connection conn = Singleton.getConnectionOuLeverException("DisponibiliteDAO.count");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            return rs.next() ? rs.getLong(1) : 0L;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw GestionnaireErreurBDD.traduireException("DisponibiliteDAO.count", e);
         }
+    }
+
+    public List<Disponibilite> findByTravailleurId(int idTravailleur) {
+        List<Disponibilite> liste = new ArrayList<>();
+        String sql = "SELECT * FROM disponibilite WHERE id_travailleur = ? ORDER BY date_debut ASC";
+        Connection conn = Singleton.getConnectionOuLeverException("DisponibiliteDAO.findByTravailleurId");
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idTravailleur);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    liste.add(mapResultSet(rs));
+                }
+            }
+            return liste;
+        } catch (SQLException e) {
+            throw GestionnaireErreurBDD.traduireException("DisponibiliteDAO.findByTravailleurId", e);
+        }
+    }
+
+    private Disponibilite mapResultSet(ResultSet rs) throws SQLException {
+        Disponibilite d = new Disponibilite();
+        d.setIdDisponibilite(rs.getInt("id_disponibilite"));
+        d.setIdTravailleur(rs.getInt("id_travailleur"));
+
+        Date debut = rs.getDate("date_debut");
+        d.setDateDebut(debut != null ? debut.toLocalDate() : null);
+
+        Date fin = rs.getDate("date_fin");
+        d.setDateFin(fin != null ? fin.toLocalDate() : null);
+
+        d.setStatut(rs.getString("statut"));
+        return d;
     }
 }

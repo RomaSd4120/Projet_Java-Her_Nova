@@ -1,7 +1,8 @@
 package com.agriflex.projet;
 
-import com.agriflex.projet.util.Singleton;
 import java.sql.Connection;
+
+import com.agriflex.projet.util.Singleton;
 
 public class App {
     public static void main(String[] args) {
