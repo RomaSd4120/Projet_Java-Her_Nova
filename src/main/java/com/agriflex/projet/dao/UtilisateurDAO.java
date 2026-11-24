@@ -1,8 +1,4 @@
-
 package com.agriflex.projet.dao;
-
-import com.agriflex.projet.model.Utilisateur;
-import com.agriflex.projet.util.Singleton;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,32 +8,36 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.agriflex.projet.model.Utilisateur;
+import com.agriflex.projet.util.GestionnaireErreurBDD;
+import com.agriflex.projet.util.Singleton;
+
 public class UtilisateurDAO implements DAO<Utilisateur> {
 
     @Override
     public boolean create(Utilisateur utilisateur) {
+        if (utilisateur == null) {
+            return false;
+        }
+
         String sql = "INSERT INTO utilisateur "
-                + "(nom, prenom, telephone, mot_de_passe_hashe, role) "
-                + "VALUES (?, ?, ?, ?, ?)";
+                + "(nom, prenom, cin, telephone, mot_de_passe_hashe, role) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
 
         Connection conn = Singleton.getConnection();
-
         if (conn == null) {
             return false;
         }
 
-        try (PreparedStatement stmt = conn.prepareStatement(
-                sql, Statement.RETURN_GENERATED_KEYS)) {
-
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, utilisateur.getNom());
             stmt.setString(2, utilisateur.getPrenom());
-            stmt.setString(3, utilisateur.getTelephone());
-            stmt.setString(4, utilisateur.getMotDePasseHashe());
-            stmt.setString(5, utilisateur.getRole());
+            stmt.setString(3, utilisateur.getCin());
+            stmt.setString(4, utilisateur.getTelephone());
+            stmt.setString(5, utilisateur.getMotDePasseHashe());
+            stmt.setString(6, utilisateur.getRole());
 
-            int rows = stmt.executeUpdate();
-
-            if (rows > 0) {
+            if (stmt.executeUpdate() > 0) {
                 try (ResultSet rs = stmt.getGeneratedKeys()) {
                     if (rs.next()) {
                         utilisateur.setIdUtilisateur(rs.getInt(1));
@@ -45,202 +45,191 @@ public class UtilisateurDAO implements DAO<Utilisateur> {
                 }
                 return true;
             }
-
+            return false;
         } catch (SQLException e) {
-            System.err.println("Erreur create Utilisateur : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("UtilisateurDAO.create", e);
         }
-
-        return false;
     }
 
     @Override
     public Utilisateur findById(int id) {
         String sql = "SELECT * FROM utilisateur WHERE id_utilisateur = ?";
-
         Connection conn = Singleton.getConnection();
-
         if (conn == null) {
             return null;
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, id);
-
             try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSet(rs);
-                }
+                return rs.next() ? mapResultSet(rs) : null;
             }
-
         } catch (SQLException e) {
-            System.err.println("Erreur findById Utilisateur : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("UtilisateurDAO.findById", e);
         }
-
-        return null;
     }
 
     @Override
     public List<Utilisateur> findAll() {
         List<Utilisateur> utilisateurs = new ArrayList<>();
-
-        String sql = "SELECT * FROM utilisateur";
-
+        String sql = "SELECT * FROM utilisateur ORDER BY id_utilisateur DESC";
         Connection conn = Singleton.getConnection();
-
         if (conn == null) {
             return utilisateurs;
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-
             while (rs.next()) {
                 utilisateurs.add(mapResultSet(rs));
             }
-
+            return utilisateurs;
         } catch (SQLException e) {
-            System.err.println("Erreur findAll Utilisateur : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("UtilisateurDAO.findAll", e);
         }
-
-        return utilisateurs;
     }
 
     @Override
     public boolean update(Utilisateur utilisateur) {
-        String sql = "UPDATE utilisateur SET nom = ?, prenom = ?, "
-                + "telephone = ?, mot_de_passe_hashe = ?, role = ? "
-                + "WHERE id_utilisateur = ?";
+        if (utilisateur == null) {
+            return false;
+        }
+
+        String sql = "UPDATE utilisateur SET nom = ?, prenom = ?, cin = ?, "
+                + "telephone = ?, mot_de_passe_hashe = ?, role = ? WHERE id_utilisateur = ?";
 
         Connection conn = Singleton.getConnection();
-
         if (conn == null) {
             return false;
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setString(1, utilisateur.getNom());
             stmt.setString(2, utilisateur.getPrenom());
-            stmt.setString(3, utilisateur.getTelephone());
-            stmt.setString(4, utilisateur.getMotDePasseHashe());
-            stmt.setString(5, utilisateur.getRole());
-            stmt.setInt(6, utilisateur.getIdUtilisateur());
+            stmt.setString(3, utilisateur.getCin());
+            stmt.setString(4, utilisateur.getTelephone());
+            stmt.setString(5, utilisateur.getMotDePasseHashe());
+            stmt.setString(6, utilisateur.getRole());
+            stmt.setInt(7, utilisateur.getIdUtilisateur());
 
             return stmt.executeUpdate() > 0;
-
         } catch (SQLException e) {
-            System.err.println("Erreur update Utilisateur : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("UtilisateurDAO.update", e);
         }
-
-        return false;
     }
 
     @Override
     public boolean delete(int id) {
         String sql = "DELETE FROM utilisateur WHERE id_utilisateur = ?";
-
         Connection conn = Singleton.getConnection();
-
         if (conn == null) {
             return false;
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, id);
-
             return stmt.executeUpdate() > 0;
-
         } catch (SQLException e) {
-            System.err.println("Erreur delete Utilisateur : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("UtilisateurDAO.delete", e);
         }
-
-        return false;
     }
 
     @Override
     public boolean exists(int id) {
         String sql = "SELECT 1 FROM utilisateur WHERE id_utilisateur = ?";
-
         Connection conn = Singleton.getConnection();
-
         if (conn == null) {
             return false;
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, id);
-
             try (ResultSet rs = stmt.executeQuery()) {
                 return rs.next();
             }
-
         } catch (SQLException e) {
-            System.err.println("Erreur exists Utilisateur : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("UtilisateurDAO.exists", e);
         }
-
-        return false;
     }
 
     @Override
     public long count() {
         String sql = "SELECT COUNT(*) FROM utilisateur";
-
         Connection conn = Singleton.getConnection();
-
         if (conn == null) {
-            return 0;
+            return 0L;
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-
-            if (rs.next()) {
-                return rs.getLong(1);
-            }
-
+            return rs.next() ? rs.getLong(1) : 0L;
         } catch (SQLException e) {
-            System.err.println("Erreur count Utilisateur : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("UtilisateurDAO.count", e);
         }
-
-        return 0;
     }
-    public Utilisateur findByCinAndPhone(String cin, String telephone) {
-        String sql = "SELECT * FROM utilisateur WHERE cin = ? AND telephone = ?";
+
+    public Utilisateur findByTelephone(String telephone) {
+        if (telephone == null || telephone.isBlank()) {
+            return null;
+        }
+        String sql = "SELECT * FROM utilisateur WHERE telephone = ?";
         Connection conn = Singleton.getConnection();
         if (conn == null) {
             return null;
         }
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, cin);
-            stmt.setString(2, telephone);
+            stmt.setString(1, telephone.trim());
             try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    Utilisateur u = mapResultSet(rs);
-                    u.setCin(rs.getString("cin"));
-                    return u;
-                }
+                return rs.next() ? mapResultSet(rs) : null;
             }
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la recherche par CIN/Téléphone : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("UtilisateurDAO.findByTelephone", e);
         }
-        return null;
     }
 
-    // Conversion du ResultSet vers un objet Utilisateur
+    public Utilisateur findByCinAndPhone(String cin, String telephone) {
+        if (telephone == null || telephone.isBlank()) {
+            return null;
+        }
+
+        String telClean = telephone.trim();
+        String cinClean = (cin != null && !cin.isBlank()) ? cin.trim() : null;
+
+        String sql = (cinClean != null)
+                ? "SELECT * FROM utilisateur WHERE cin = ? AND telephone = ?"
+                : "SELECT * FROM utilisateur WHERE telephone = ?";
+
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return null;
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            if (cinClean != null) {
+                stmt.setString(1, cinClean);
+                stmt.setString(2, telClean);
+            } else {
+                stmt.setString(1, telClean);
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next() ? mapResultSet(rs) : null;
+            }
+        } catch (SQLException e) {
+            throw GestionnaireErreurBDD.traduireException("UtilisateurDAO.findByCinAndPhone", e);
+        }
+    }
+
     private Utilisateur mapResultSet(ResultSet rs) throws SQLException {
         Utilisateur utilisateur = new Utilisateur();
-
         utilisateur.setIdUtilisateur(rs.getInt("id_utilisateur"));
         utilisateur.setNom(rs.getString("nom"));
         utilisateur.setPrenom(rs.getString("prenom"));
+        utilisateur.setCin(rs.getString("cin"));
         utilisateur.setTelephone(rs.getString("telephone"));
         utilisateur.setMotDePasseHashe(rs.getString("mot_de_passe_hashe"));
         utilisateur.setRole(rs.getString("role"));
-
         return utilisateur;
     }
 }
-

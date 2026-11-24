@@ -44,7 +44,7 @@ public class CandidatController {
     private final AffectationDAO affectationDAO = new AffectationDAO();
 
     private Travailleur travailleurActuel;
-    private int idDisponibiliteActuelle = -1;
+    private Disponibilite disponibiliteActuelle;
 
     private final AudioService audioService = new AudioService();
     private String cheminFichierAudio;
@@ -96,20 +96,19 @@ public class CandidatController {
     private void chargerDisponibilite() {
         if (travailleurActuel == null) return;
         int idCandidat = travailleurActuel.getIdCandidat();
-        List<Disponibilite> disps = disponibiliteDAO.getByTravailleur(idCandidat);
+        List<Disponibilite> disps = disponibiliteDAO.findByTravailleurId(idCandidat);
 
         if (!disps.isEmpty()) {
-            Disponibilite d = disps.get(0);
-            idDisponibiliteActuelle = d.getIdDisponibilite();
-            mettreAJourBadgeStatut(d.getStatut());
+            disponibiliteActuelle = disps.get(0);
+            mettreAJourBadgeStatut(disponibiliteActuelle.getStatut());
         } else {
             Disponibilite nouvelle = new Disponibilite(
                     idCandidat, LocalDate.now(), LocalDate.now().plusMonths(3), "Disponible"
             );
             disponibiliteDAO.create(nouvelle);
-            List<Disponibilite> recharge = disponibiliteDAO.getByTravailleur(idCandidat);
+            List<Disponibilite> recharge = disponibiliteDAO.findByTravailleurId(idCandidat);
             if (!recharge.isEmpty()) {
-                idDisponibiliteActuelle = recharge.get(0).getIdDisponibilite();
+                disponibiliteActuelle = recharge.get(0);
             }
             mettreAJourBadgeStatut("Disponible");
         }
@@ -126,22 +125,28 @@ public class CandidatController {
 
     @FXML
     private void handleSetDisponible() {
-        if (idDisponibiliteActuelle != -1 && disponibiliteDAO.updateStatut(idDisponibiliteActuelle, "Disponible")) {
-            mettreAJourBadgeStatut("Disponible");
-            if (travailleurActuel != null) {
-                travailleurActuel.setDisponibilite("Disponible");
-                travailleurDAO.update(travailleurActuel);
+        if (disponibiliteActuelle != null) {
+            disponibiliteActuelle.setStatut("Disponible");
+            if (disponibiliteDAO.update(disponibiliteActuelle)) {
+                mettreAJourBadgeStatut("Disponible");
+                if (travailleurActuel != null) {
+                    travailleurActuel.setDisponibilite("Disponible");
+                    travailleurDAO.update(travailleurActuel);
+                }
             }
         }
     }
 
     @FXML
     private void handleSetIndisponible() {
-        if (idDisponibiliteActuelle != -1 && disponibiliteDAO.updateStatut(idDisponibiliteActuelle, "Indisponible")) {
-            mettreAJourBadgeStatut("Indisponible");
-            if (travailleurActuel != null) {
-                travailleurActuel.setDisponibilite("Indisponible");
-                travailleurDAO.update(travailleurActuel);
+        if (disponibiliteActuelle != null) {
+            disponibiliteActuelle.setStatut("Indisponible");
+            if (disponibiliteDAO.update(disponibiliteActuelle)) {
+                mettreAJourBadgeStatut("Indisponible");
+                if (travailleurActuel != null) {
+                    travailleurActuel.setDisponibilite("Indisponible");
+                    travailleurDAO.update(travailleurActuel);
+                }
             }
         }
     }
@@ -231,8 +236,9 @@ public class CandidatController {
     private void sauvegarderCheminAudioEnBase(String chemin) {
         if (travailleurActuel == null) return;
         String sql = "UPDATE travailleur SET chemin_audio = ? WHERE id_candidat = ?";
-        try (Connection conn = Singleton.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        Connection conn = Singleton.getConnection();
+        if (conn == null) return;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, chemin);
             ps.setInt(2, travailleurActuel.getIdCandidat());
             ps.executeUpdate();

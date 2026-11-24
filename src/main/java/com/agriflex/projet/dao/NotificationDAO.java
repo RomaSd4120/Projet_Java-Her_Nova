@@ -1,33 +1,35 @@
 
 package com.agriflex.projet.dao;
 
-import com.agriflex.projet.model.Notification;
-import com.agriflex.projet.util.Singleton;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.agriflex.projet.model.Notification;
+import com.agriflex.projet.util.GestionnaireErreurBDD;
+import com.agriflex.projet.util.Singleton;
+
 public class NotificationDAO implements DAO<Notification> {
 
     @Override
     public boolean create(Notification notification) {
+        if (notification == null) {
+            return false;
+        }
+
         String sql = "INSERT INTO notification "
-                + "(id_candidat, id_mission, canal, message, statut_envoi) "
-                + "VALUES (?, ?, ?, ?, ?)";
+                + "(id_candidat, id_mission, canal, message, date_envoi, statut_envoi) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
 
-        Connection conn = Singleton.getConnection();
-        if (conn == null) return false;
+        Connection conn = Singleton.getConnectionOuLeverException("NotificationDAO.create");
 
-        try (PreparedStatement stmt = conn.prepareStatement(
-                sql, Statement.RETURN_GENERATED_KEYS)) {
-
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, notification.getIdCandidat());
 
             if (notification.getIdMission() == null) {
@@ -38,7 +40,14 @@ public class NotificationDAO implements DAO<Notification> {
 
             stmt.setString(3, notification.getCanal());
             stmt.setString(4, notification.getMessage());
-            stmt.setString(5, notification.getStatutEnvoi());
+
+            if (notification.getDateEnvoi() == null) {
+                stmt.setNull(5, Types.TIMESTAMP);
+            } else {
+                stmt.setTimestamp(5, Timestamp.valueOf(notification.getDateEnvoi()));
+            }
+
+            stmt.setString(6, notification.getStatutEnvoi());
 
             if (stmt.executeUpdate() > 0) {
                 try (ResultSet rs = stmt.getGeneratedKeys()) {
@@ -48,70 +57,56 @@ public class NotificationDAO implements DAO<Notification> {
                 }
                 return true;
             }
-
+            return false;
         } catch (SQLException e) {
-            System.err.println("Erreur create Notification : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("NotificationDAO.create", e);
         }
-
-        return false;
     }
 
     @Override
     public Notification findById(int id) {
         String sql = "SELECT * FROM notification WHERE id_notification = ?";
-
-        Connection conn = Singleton.getConnection();
-        if (conn == null) return null;
+        Connection conn = Singleton.getConnectionOuLeverException("NotificationDAO.findById");
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-
             try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSet(rs);
-                }
+                return rs.next() ? mapResultSet(rs) : null;
             }
-
         } catch (SQLException e) {
-            System.err.println("Erreur findById Notification : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("NotificationDAO.findById", e);
         }
-
-        return null;
     }
 
     @Override
     public List<Notification> findAll() {
-        List<Notification> notifications = new ArrayList<>();
-        String sql = "SELECT * FROM notification";
-
-        Connection conn = Singleton.getConnection();
-        if (conn == null) return notifications;
+        List<Notification> liste = new ArrayList<>();
+        String sql = "SELECT * FROM notification ORDER BY date_envoi DESC, id_notification DESC";
+        Connection conn = Singleton.getConnectionOuLeverException("NotificationDAO.findAll");
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-
             while (rs.next()) {
-                notifications.add(mapResultSet(rs));
+                liste.add(mapResultSet(rs));
             }
-
+            return liste;
         } catch (SQLException e) {
-            System.err.println("Erreur findAll Notification : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("NotificationDAO.findAll", e);
         }
-
-        return notifications;
     }
 
     @Override
     public boolean update(Notification notification) {
-        String sql = "UPDATE notification SET id_candidat = ?, id_mission = ?, "
-                + "canal = ?, message = ?, statut_envoi = ? "
-                + "WHERE id_notification = ?";
+        if (notification == null) {
+            return false;
+        }
 
-        Connection conn = Singleton.getConnection();
-        if (conn == null) return false;
+        String sql = "UPDATE notification SET id_candidat = ?, id_mission = ?, canal = ?, "
+                + "message = ?, date_envoi = ?, statut_envoi = ? WHERE id_notification = ?";
+
+        Connection conn = Singleton.getConnectionOuLeverException("NotificationDAO.update");
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, notification.getIdCandidat());
 
             if (notification.getIdMission() == null) {
@@ -122,102 +117,78 @@ public class NotificationDAO implements DAO<Notification> {
 
             stmt.setString(3, notification.getCanal());
             stmt.setString(4, notification.getMessage());
-            stmt.setString(5, notification.getStatutEnvoi());
-            stmt.setInt(6, notification.getIdNotification());
+
+            if (notification.getDateEnvoi() == null) {
+                stmt.setNull(5, Types.TIMESTAMP);
+            } else {
+                stmt.setTimestamp(5, Timestamp.valueOf(notification.getDateEnvoi()));
+            }
+
+            stmt.setString(6, notification.getStatutEnvoi());
+            stmt.setInt(7, notification.getIdNotification());
 
             return stmt.executeUpdate() > 0;
-
         } catch (SQLException e) {
-            System.err.println("Erreur update Notification : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("NotificationDAO.update", e);
         }
-
-        return false;
     }
 
     @Override
     public boolean delete(int id) {
         String sql = "DELETE FROM notification WHERE id_notification = ?";
-
-        Connection conn = Singleton.getConnection();
-        if (conn == null) return false;
+        Connection conn = Singleton.getConnectionOuLeverException("NotificationDAO.delete");
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
-
         } catch (SQLException e) {
-            System.err.println("Erreur delete Notification : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("NotificationDAO.delete", e);
         }
-
-        return false;
     }
 
     @Override
     public boolean exists(int id) {
         String sql = "SELECT 1 FROM notification WHERE id_notification = ?";
-
-        Connection conn = Singleton.getConnection();
-        if (conn == null) return false;
+        Connection conn = Singleton.getConnectionOuLeverException("NotificationDAO.exists");
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-
             try (ResultSet rs = stmt.executeQuery()) {
                 return rs.next();
             }
-
         } catch (SQLException e) {
-            System.err.println("Erreur exists Notification : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("NotificationDAO.exists", e);
         }
-
-        return false;
     }
 
     @Override
     public long count() {
         String sql = "SELECT COUNT(*) FROM notification";
-
-        Connection conn = Singleton.getConnection();
-        if (conn == null) return 0;
+        Connection conn = Singleton.getConnectionOuLeverException("NotificationDAO.count");
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-
-            if (rs.next()) {
-                return rs.getLong(1);
-            }
-
+            return rs.next() ? rs.getLong(1) : 0L;
         } catch (SQLException e) {
-            System.err.println("Erreur count Notification : " + e.getMessage());
+            throw GestionnaireErreurBDD.traduireException("NotificationDAO.count", e);
         }
-
-        return 0;
     }
 
     private Notification mapResultSet(ResultSet rs) throws SQLException {
         Notification notification = new Notification();
-
         notification.setIdNotification(rs.getInt("id_notification"));
         notification.setIdCandidat(rs.getInt("id_candidat"));
 
         int idMission = rs.getInt("id_mission");
-        if (rs.wasNull()) {
-            notification.setIdMission(null);
-        } else {
-            notification.setIdMission(idMission);
-        }
+        notification.setIdMission(rs.wasNull() ? null : idMission);
 
         notification.setCanal(rs.getString("canal"));
         notification.setMessage(rs.getString("message"));
 
-        Timestamp timestamp = rs.getTimestamp("date_envoi");
-        notification.setDateEnvoi(
-                timestamp == null ? null : timestamp.toLocalDateTime()
-        );
+        Timestamp dateEnvoi = rs.getTimestamp("date_envoi");
+        notification.setDateEnvoi(dateEnvoi != null ? dateEnvoi.toLocalDateTime() : null);
 
         notification.setStatutEnvoi(rs.getString("statut_envoi"));
-
         return notification;
     }
 }
-
