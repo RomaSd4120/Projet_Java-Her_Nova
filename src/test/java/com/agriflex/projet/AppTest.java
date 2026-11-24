@@ -70,4 +70,34 @@ public class AppTest {
             assertEquals("Tous les travailleurs filtrés doivent être Disponibles", "Disponible", t.getDisponibilite());
         }
     }
+    // 5. Test de la connexion d'un utilisateur existant en base (Alami Ahmed)
+    @Test
+    public void testUtilisateurExistant() {
+        AuthService authService = new AuthService();
+        Utilisateur user = authService.verifierIdentifiants("AB123456", "0600000000");
+
+        assertNotNull("L'utilisateur AB123456 doit exister dans MySQL", user);
+        assertEquals("Alami", user.getNom());
+    }
+
+    // 6. Test de la couche DAO : CompetenceDAO (Ajout, lecture et suppression)
+    @Test
+    public void testCompetenceDao() {
+        com.agriflex.projet.dao.CompetenceDAO compDao = new com.agriflex.projet.dao.CompetenceDAO();
+
+        com.agriflex.projet.model.Competence comp = new com.agriflex.projet.model.Competence();
+        comp.setNomCompetence("Test JUnit Irrigation");
+        comp.setIdTravailleur(1);
+
+        assertTrue("La compétence doit être ajoutée en base", compDao.create(comp));
+
+        List<com.agriflex.projet.model.Competence> liste = compDao.getByTravailleur(1);
+        assertFalse("La liste des compétences ne doit pas être vide", liste.isEmpty());
+
+        // Nettoyage de la donnée de test
+        com.agriflex.projet.model.Competence derniere = liste.get(liste.size() - 1);
+        if ("Test JUnit Irrigation".equals(derniere.getNomCompetence())) {
+            assertTrue("Nettoyage de la compétence de test", compDao.delete(derniere.getIdCompetence()));
+        }
+    }
 }

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.agriflex.projet.controller.CandidatController"
+            prefWidth="950.0" prefHeight="680.0" style="-fx-background-color: #f4f7f5;">
+
+    <!-- EN-TÊTE -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: #2e7d32; -fx-padding: 15 25;">
+            <Label text="🌱 AgriFlex — Espace Ouvrier Agricole"
+                   style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblNomCandidat" text="Bienvenue, Ouvrier"
+                   style="-fx-text-fill: #e8f5e9; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+            <Button text="Déconnexion" onAction="#handleDeconnexion"
+                    style="-fx-background-color: #c62828; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+        </HBox>
+    </top>
+
+    <!-- CONTENU PRINCIPAL -->
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <VBox spacing="20.0" style="-fx-padding: 25;">
+
+                <!-- CARTE 1 : STATUT DE DISPONIBILITÉ & RÉGION -->
+                <VBox spacing="12.0" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 8, 0, 0, 2);">
+                    <Label text="1. Ma Disponibilité &amp; Ma Région Actuelle"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1b5e20;"/>
+                           <HBox spacing="15.0" alignment="CENTER_LEFT">
+                            <Label text="Statut actuel :" style="-fx-font-weight: bold;"/>
+                            <Label fx:id="lblStatutActuel" text="Disponible" visible="false" managed="false"
+                            style="-fx-background-color: #e8f5e9; -fx-text-fill: #2e7d32; -fx-padding: 5 12; -fx-background-radius: 15; -fx-font-weight: bold;"/>
+                            <Button text=" Disponible" onAction="#handleSetDisponible"
+                            style="-fx-background-color: #2e7d32; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                            <Button text=" Indisponible" onAction="#handleSetIndisponible"
+                            style="-fx-background-color: #d32f2f; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                        </HBox>
+
+                    <HBox spacing="15.0" alignment="CENTER_LEFT">
+                        <Label text="Région actuelle :" style="-fx-font-weight: bold;"/>
+                        <ComboBox fx:id="cbRegion" prefWidth="250.0" promptText="Choisir votre région..."/>
+                        <Button text="Enregistrer la région" onAction="#handleSaveRegion"
+                                style="-fx-background-color: #1565c0; -fx-text-fill: white; -fx-cursor: hand;"/>
+                    </HBox>
+                </VBox>
+
+                <!-- CARTE 2 : SÉLECTION VISUELLE DES COMPÉTENCES PAR ICÔNES -->
+                <VBox spacing="12.0" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 8, 0, 0, 2);">
+                    <Label text="2. Mes Compétences Agricoles (Sélection rapide par icônes)"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1b5e20;"/>
+
+                    <HBox spacing="15.0">
+                        <Button text="🍅 Récolte de tomates" onAction="#handleAddTomates" prefWidth="200.0" prefHeight="55.0"
+                                style="-fx-background-color: #ffebee; -fx-border-color: #ef5350; -fx-border-radius: 8; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                        <Button text="🍊 Cueillette des agrumes" onAction="#handleAddAgrumes" prefWidth="210.0" prefHeight="55.0"
+                                style="-fx-background-color: #fff3e0; -fx-border-color: #ffa726; -fx-border-radius: 8; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                        <Button text="🚜 Conduite de tracteur" onAction="#handleAddTracteur" prefWidth="200.0" prefHeight="55.0"
+                                style="-fx-background-color: #e8f5e9; -fx-border-color: #66bb6a; -fx-border-radius: 8; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                    </HBox>
+
+                    <!-- Formulaire Hybride -->
+                    <HBox spacing="10.0" alignment="CENTER_LEFT">
+                        <TextField fx:id="txtCompetenceLibre" promptText="Autre compétence (optionnel)..." prefWidth="280.0"/>
+                        <Button text="+ Ajouter" onAction="#handleAddCompetenceLibre"
+                                style="-fx-background-color: #388e3c; -fx-text-fill: white; -fx-cursor: hand;"/>
+                    </HBox>
+                    <VBox spacing="8.0" style="-fx-background-color: #f8f9fa; -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #dee2e6; -fx-border-radius: 8;">
+                        <Label text="🎤 Présentation vocale (Optionnel — pour décrire votre expérience à l'oral) :"
+                        style="-fx-font-weight: bold; -fx-text-fill: #2e7d32;"/>
+                        <HBox spacing="12.0" alignment="CENTER_LEFT">
+                            <Button fx:id="btnEnregistrerAudio" text="🎤 Enregistrer une note vocale" onAction="#handleEnregistrerAudio"
+                            style="-fx-background-color: #1565c0; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                            <Button fx:id="btnArreterAudio" text="⏹ Arrêter" onAction="#handleArreterAudio" disable="true"
+                            style="-fx-background-color: #d32f2f; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                            <Button fx:id="btnEcouterAudio" text="▶ Écouter ma note" onAction="#handleEcouterAudio"
+                            style="-fx-background-color: #2e7d32; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                            <Label fx:id="lblStatutAudio" text="Aucune note vocale enregistrée" style="-fx-text-fill: #555555; -fx-font-style: italic;"/>
+                        </HBox>
+                    </VBox>
+                    <ListView fx:id="listCompetences" prefHeight="95.0"/>
+                </VBox>
+
+                <!-- CARTE 3 : OFFRES DE MISSION REÇUES (1-CLIC) -->
+                <VBox spacing="12.0" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 8, 0, 0, 2);">
+                    <Label text="3. Offres de Mission Reçues"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1b5e20;"/>
+
+                    <TableView fx:id="tableAffectations" prefHeight="170.0">
+                        <columns>
+                            <TableColumn fx:id="colIdAffectation" text="N° Offre" prefWidth="100.0"/>
+                            <TableColumn fx:id="colIdMission" text="Code Mission" prefWidth="150.0"/>
+                            <TableColumn fx:id="colDateProp" text="Date Proposition" prefWidth="180.0"/>
+                            <TableColumn fx:id="colStatutOffre" text="Statut" prefWidth="180.0"/>
+                        </columns>
+                    </TableView>
+
+                    <HBox spacing="15.0">
+                        <Button text="✔ Accepter la mission sélectionnée" onAction="#handleAccepterMission"
+                                style="-fx-background-color: #2e7d32; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                        <Button text="✖ Refuser la mission" onAction="#handleRefuserMission"
+                                style="-fx-background-color: #c62828; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                    </HBox>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>

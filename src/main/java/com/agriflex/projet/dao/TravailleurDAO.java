@@ -224,4 +224,21 @@ public class TravailleurDAO implements DAO<Travailleur> {
 
         return travailleur;
     }
+    public Travailleur findByUtilisateurId(int idUtilisateur) {
+        String sql = "SELECT * FROM travailleur WHERE id_utilisateur = ?";
+        Connection conn = Singleton.getConnection();
+        if (conn == null) return null;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idUtilisateur);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSet(rs);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur findByUtilisateurId Travailleur : " + e.getMessage());
+        }
+        return null;
+    }
 }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" spacing="18.0" prefWidth="460.0" prefHeight="500.0"
+      style="-fx-background-color: #f4f7f5;"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.agriflex.projet.controller.LoginController">
+
+    <padding>
+        <Insets top="30" right="35" bottom="30" left="35"/>
+    </padding>
+
+    <!-- En-tête AgriFlex -->
+    <VBox alignment="CENTER" spacing="5.0">
+        <Label text="🌱 AgriFlex" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2e7d32;"/>
+        <Label text="Connexion sécurisée — Espace Ouvrier Agricole" style="-fx-font-size: 13px; -fx-text-fill: #555555;"/>
+    </VBox>
+
+    <!-- Carte Formulaire Login -->
+    <VBox spacing="12.0" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 12; -fx-border-color: #dce5df; -fx-border-radius: 12;">
+
+        <Label text="Numéro de CINE :" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="txtCin" promptText="Ex: AB123456" style="-fx-padding: 8;"/>
+
+        <Label text="Numéro de Téléphone :" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="txtTelephone" promptText="Ex: 0600000000" style="-fx-padding: 8;"/>
+
+        <Button text="📲 Recevoir le code OTP" onAction="#handleConnexion" maxWidth="Infinity"
+                style="-fx-background-color: #1565c0; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10; -fx-cursor: hand;"/>
+
+        <Separator/>
+
+        <Label text="Code OTP reçu (4 chiffres) :" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="txtCodeOtp" promptText="Entrez le code à 4 chiffres" style="-fx-padding: 8;"/>
+
+        <Button text="✅ Valider &amp; Accéder à mon espace" onAction="#handleValidationOtp" maxWidth="Infinity"
+                style="-fx-background-color: #2e7d32; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10; -fx-cursor: hand;"/>
+    </VBox>
+
+</VBox>

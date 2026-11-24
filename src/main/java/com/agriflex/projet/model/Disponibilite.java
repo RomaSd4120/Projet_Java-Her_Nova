@@ -71,4 +71,7 @@ public class Disponibilite {
     public void setStatut(String statut) {
         this.statut = statut;
     }
+    public boolean isDisponible() {
+        return "Disponible".equalsIgnoreCase(this.statut);
+    }
 }

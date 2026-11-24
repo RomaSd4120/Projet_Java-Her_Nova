@@ -1,5 +1,10 @@
 package com.agriflex.projet.controller;
 
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import java.io.IOException;
 import com.agriflex.projet.model.Utilisateur;
 import com.agriflex.projet.service.AuthService;
 import javafx.fxml.FXML;
@@ -39,14 +44,29 @@ public class LoginController {
     }
 
     // 2. Appelée au clic sur le bouton "Valider le code"
-    @FXML
+   @FXML
     public void handleValidationOtp() {
         String codeSaisi = txtCodeOtp.getText();
 
         if (authService.validerOTP(codeSaisi, this.codeOtpActuel)) {
             afficherAlerte(Alert.AlertType.INFORMATION, "Succès",
                     "Bienvenue " + utilisateurEnCours.getNom() + " !");
-            
+
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/espace_candidat.fxml"));
+                Parent root = loader.load();
+
+                CandidatController controller = loader.getController();
+                controller.initData(utilisateurEnCours);
+
+                Stage stage = (Stage) txtCodeOtp.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("AgriFlex — Espace Candidat");
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                afficherAlerte(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir l'Espace Candidat.");
+            }
 
         } else {
             afficherAlerte(Alert.AlertType.ERROR, "Code invalide",
