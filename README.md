@@ -5,7 +5,7 @@
 
 ## Présentation du Projet
 **AgriFlex** est une solution digitale binationale (Espace Candidat & Back-Office KIBA) conçue pour structurer, accélérer et optimiser la gestion de la main-d'œuvre agricole non qualifiée au Maroc. La plateforme répond aux enjeux de pénurie saisonnière et de gestion des rotations d'ouvriers entre les grandes régions agricoles (Souss-Massa, Gharb, Oriental, etc.).
-**Cahier de charge** : 
+📄 **[Cahier des Charges ](https://github.com/RomaSd4120/Projet_Java-Her_Nova/blob/main/AgriFlex_Cahier_de_charge.pdf)**
 
 ---
 
