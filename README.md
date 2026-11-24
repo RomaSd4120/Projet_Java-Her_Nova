@@ -38,11 +38,11 @@ Les maquettes ont été conçues selon une charte graphique professionnelle déd
 * **Standardisation :** Format Desktop 1440x1024 pour l'ensemble des écrans.
 
 ### Aperçu des Écrans Principaux :
-1. **Frame 1 — Connexion & OTP Candidat :** Interface d'accès rapide par téléphone.
-2. **Frame 2 — Espace Candidat :** Interface de disponibilité et propositions reçues.
-3. **Frame 3 — Dashboard KIBA Back-Office :** Vue d'ensemble opérationnelle et statistiques régionales.
-4. **Frame 4 — Matching & Création de Mission :** Module d'affectation intelligente et alerte SMS/WhatsApp.
-5. **Frame 5 — Planning & Vue Saisonnière :** Calendrier de rotation des équipes par culture.
+ **Frame 1 — Connexion & OTP Candidat :** Interface d'accès rapide par téléphone.
+ **Frame 2 — Espace Candidat :** Interface de disponibilité et propositions reçues.
+ **Frame 3 — Dashboard KIBA Back-Office :** Vue d'ensemble opérationnelle et statistiques régionales.
+ **Frame 4 — Matching & Création de Mission :** Module d'affectation intelligente et alerte SMS/WhatsApp.
+ **Frame 5 — Planning & Vue Saisonnière :** Calendrier de rotation des équipes par culture.
 
 - **🔗 Lien du Prototype Interactif :** [Cliquez ici pour tester la maquette Figma]
   https://www.figma.com/design/gRzqx04jBctT5In5F3SNiH/Sans-titre?node-id=0-1&t=9wIYUNYjMCLGak5F-1
