@@ -68,5 +68,66 @@ Les maquettes ont été conçues selon une charte graphique professionnelle déd
 ```
 
 ---
+## Structure du Projet
+
+```text
+Projet_Java-Her_Nova/
+├── database/
+│   └── agriflex_db.sql                 # Script SQL de création de la base de données
+│
+├── src/
+│   ├── main/
+│   │   ├── java/com/agriflex/projet/
+│   │   │   ├── controller/             # Contrôleurs JavaFX (@FXML)
+│   │   │   │   ├── LoginController.java
+│   │   │   │   └── MissionController.java
+│   │   │   │
+│   │   │   ├── dao/                    # Couche d'accès aux données (JDBC / CRUD)
+│   │   │   │   ├── AffectationDAO.java
+│   │   │   │   ├── CodeOTPDAO.java
+│   │   │   │   ├── CompetenceDAO.java
+│   │   │   │   ├── DAO.java
+│   │   │   │   ├── DemandePersonnelDAO.java
+│   │   │   │   ├── DisponibiliteDAO.java
+│   │   │   │   ├── EntrepriseAgricoleDAO.java
+│   │   │   │   ├── NotificationDAO.java
+│   │   │   │   ├── RegionDAO.java
+│   │   │   │   ├── TravailleurDAO.java
+│   │   │   │   └── UtilisateurDAO.java
+│   │   │   │
+│   │   │   ├── model/                  # Entités / Modèles métier
+│   │   │   │   ├── Affectation.java
+│   │   │   │   ├── CodeOTP.java
+│   │   │   │   ├── Competence.java
+│   │   │   │   ├── DemandePersonnel.java
+│   │   │   │   ├── Disponibilite.java
+│   │   │   │   ├── EntrepriseAgricole.java
+│   │   │   │   ├── Notification.java
+│   │   │   │   ├── Region.java
+│   │   │   │   ├── Travailleur.java
+│   │   │   │   └── Utilisateur.java
+│   │   │   │
+│   │   │   ├── service/                # Logique métier (Authentification & Matching)
+│   │   │   │   ├── AuthService.java
+│   │   │   │   └── MatchingService.java
+│   │   │   │
+│   │   │   ├── util/                   # Utilitaires & Connexion BDD
+│   │   │   │   └── Singleton.java
+│   │   │   │
+│   │   │   └── App.java                # Point d'entrée principal de l'application JavaFX
+│   │   │
+│   │   └── resources/                  # Ressources & Configuration
+│   │       └── config.properties       # Paramètres de connexion MySQL
+│   │
+│   └── test/
+│       └── java/com/agriflex/projet/
+│           └── AppTest.java            # Tests unitaires et d'intégration (JUnit 4)
+│
+├── .gitignore                          # Fichiers et dossiers ignorés par Git
+├── pom.xml                             # Configuration et dépendances Apache Maven
+└── README.md                           # Documentation du projet
+```
+
+---
 
 **Lien du repository GitHub :** [Projet Java-Her_Nova](https://github.com/RomaSd4120/Projet_Java-Her_Nova)
