@@ -1,4 +1,3 @@
-
 package com.agriflex.projet.dao;
 
 import java.sql.Connection;
@@ -25,7 +24,10 @@ public class UtilisateurDAO implements DAO<Utilisateur> {
                 + "(nom, prenom, cin, telephone, mot_de_passe_hashe, role) "
                 + "VALUES (?, ?, ?, ?, ?, ?)";
 
-        Connection conn = Singleton.getConnectionOuLeverException("UtilisateurDAO.create");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, utilisateur.getNom());
@@ -52,7 +54,10 @@ public class UtilisateurDAO implements DAO<Utilisateur> {
     @Override
     public Utilisateur findById(int id) {
         String sql = "SELECT * FROM utilisateur WHERE id_utilisateur = ?";
-        Connection conn = Singleton.getConnectionOuLeverException("UtilisateurDAO.findById");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return null;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -68,7 +73,10 @@ public class UtilisateurDAO implements DAO<Utilisateur> {
     public List<Utilisateur> findAll() {
         List<Utilisateur> utilisateurs = new ArrayList<>();
         String sql = "SELECT * FROM utilisateur ORDER BY id_utilisateur DESC";
-        Connection conn = Singleton.getConnectionOuLeverException("UtilisateurDAO.findAll");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return utilisateurs;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -90,7 +98,10 @@ public class UtilisateurDAO implements DAO<Utilisateur> {
         String sql = "UPDATE utilisateur SET nom = ?, prenom = ?, cin = ?, "
                 + "telephone = ?, mot_de_passe_hashe = ?, role = ? WHERE id_utilisateur = ?";
 
-        Connection conn = Singleton.getConnectionOuLeverException("UtilisateurDAO.update");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, utilisateur.getNom());
@@ -110,7 +121,10 @@ public class UtilisateurDAO implements DAO<Utilisateur> {
     @Override
     public boolean delete(int id) {
         String sql = "DELETE FROM utilisateur WHERE id_utilisateur = ?";
-        Connection conn = Singleton.getConnectionOuLeverException("UtilisateurDAO.delete");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -123,7 +137,10 @@ public class UtilisateurDAO implements DAO<Utilisateur> {
     @Override
     public boolean exists(int id) {
         String sql = "SELECT 1 FROM utilisateur WHERE id_utilisateur = ?";
-        Connection conn = Singleton.getConnectionOuLeverException("UtilisateurDAO.exists");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -138,7 +155,10 @@ public class UtilisateurDAO implements DAO<Utilisateur> {
     @Override
     public long count() {
         String sql = "SELECT COUNT(*) FROM utilisateur";
-        Connection conn = Singleton.getConnectionOuLeverException("UtilisateurDAO.count");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return 0L;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -153,7 +173,10 @@ public class UtilisateurDAO implements DAO<Utilisateur> {
             return null;
         }
         String sql = "SELECT * FROM utilisateur WHERE telephone = ?";
-        Connection conn = Singleton.getConnectionOuLeverException("UtilisateurDAO.findByTelephone");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return null;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, telephone.trim());
@@ -164,40 +187,39 @@ public class UtilisateurDAO implements DAO<Utilisateur> {
             throw GestionnaireErreurBDD.traduireException("UtilisateurDAO.findByTelephone", e);
         }
     }
+
     public Utilisateur findByCinAndPhone(String cin, String telephone) {
-    if (telephone == null || telephone.isBlank()) {
-        return null;
-    }
-
-    String telClean = telephone.trim();
-    String cinClean = null;
-    boolean hasCin = false;
-    if (cin != null && !cin.isBlank()) {
-        cinClean = cin.trim();
-        hasCin = true;
-    }
-
-    String sql = hasCin
-            ? "SELECT * FROM utilisateur WHERE cin = ? AND telephone = ?"
-            : "SELECT * FROM utilisateur WHERE telephone = ?";
-
-    Connection conn = Singleton.getConnectionOuLeverException("UtilisateurDAO.findByCinAndPhone");
-
-    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-        if (cinClean != null) {
-            stmt.setString(1, cinClean);
-            stmt.setString(2, telClean);
-        } else {
-            stmt.setString(1, telClean);
+        if (telephone == null || telephone.isBlank()) {
+            return null;
         }
 
-        try (ResultSet rs = stmt.executeQuery()) {
-            return rs.next() ? mapResultSet(rs) : null;
+        String telClean = telephone.trim();
+        String cinClean = (cin != null && !cin.isBlank()) ? cin.trim() : null;
+
+        String sql = (cinClean != null)
+                ? "SELECT * FROM utilisateur WHERE cin = ? AND telephone = ?"
+                : "SELECT * FROM utilisateur WHERE telephone = ?";
+
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return null;
         }
-    } catch (SQLException e) {
-        throw GestionnaireErreurBDD.traduireException("UtilisateurDAO.findByCinAndPhone", e);
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            if (cinClean != null) {
+                stmt.setString(1, cinClean);
+                stmt.setString(2, telClean);
+            } else {
+                stmt.setString(1, telClean);
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next() ? mapResultSet(rs) : null;
+            }
+        } catch (SQLException e) {
+            throw GestionnaireErreurBDD.traduireException("UtilisateurDAO.findByCinAndPhone", e);
+        }
     }
-}
 
     private Utilisateur mapResultSet(ResultSet rs) throws SQLException {
         Utilisateur utilisateur = new Utilisateur();
@@ -211,4 +233,3 @@ public class UtilisateurDAO implements DAO<Utilisateur> {
         return utilisateur;
     }
 }
-

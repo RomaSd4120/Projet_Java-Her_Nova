@@ -27,7 +27,10 @@ public class AffectationDAO implements DAO<Affectation> {
                 + "(id_candidat, id_mission, date_proposition, statut) "
                 + "VALUES (?, ?, ?, ?)";
 
-        Connection conn = Singleton.getConnectionOuLeverException("AffectationDAO.create");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(
                 sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -62,7 +65,10 @@ public class AffectationDAO implements DAO<Affectation> {
     public Affectation findById(int id) {
         String sql = "SELECT * FROM affectation WHERE id_affectation = ?";
 
-        Connection conn = Singleton.getConnectionOuLeverException("AffectationDAO.findById");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return null;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -84,7 +90,10 @@ public class AffectationDAO implements DAO<Affectation> {
         List<Affectation> affectations = new ArrayList<>();
         String sql = "SELECT * FROM affectation";
 
-        Connection conn = Singleton.getConnectionOuLeverException("AffectationDAO.findAll");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return affectations;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -108,7 +117,10 @@ public class AffectationDAO implements DAO<Affectation> {
         String sql = "UPDATE affectation SET id_candidat = ?, id_mission = ?, "
                 + "date_proposition = ?, statut = ? WHERE id_affectation = ?";
 
-        Connection conn = Singleton.getConnectionOuLeverException("AffectationDAO.update");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -135,7 +147,10 @@ public class AffectationDAO implements DAO<Affectation> {
     public boolean delete(int id) {
         String sql = "DELETE FROM affectation WHERE id_affectation = ?";
 
-        Connection conn = Singleton.getConnectionOuLeverException("AffectationDAO.delete");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -150,7 +165,10 @@ public class AffectationDAO implements DAO<Affectation> {
     public boolean exists(int id) {
         String sql = "SELECT 1 FROM affectation WHERE id_affectation = ?";
 
-        Connection conn = Singleton.getConnectionOuLeverException("AffectationDAO.exists");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -168,7 +186,10 @@ public class AffectationDAO implements DAO<Affectation> {
     public long count() {
         String sql = "SELECT COUNT(*) FROM affectation";
 
-        Connection conn = Singleton.getConnectionOuLeverException("AffectationDAO.count");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return 0L;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -201,7 +222,10 @@ public class AffectationDAO implements DAO<Affectation> {
                 + "AND d.date_debut IS NOT NULL AND d.date_fin IS NOT NULL "
                 + "AND d.date_debut <= ? AND d.date_fin >= ?";
 
-        Connection conn = Singleton.getConnectionOuLeverException("AffectationDAO.aUnConflitDeDates");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, idCandidat);
@@ -235,5 +259,37 @@ public class AffectationDAO implements DAO<Affectation> {
         affectation.setStatut(rs.getString("statut"));
 
         return affectation;
+    }
+
+    public List<Affectation> getByCandidat(int idCandidat) {
+        List<Affectation> liste = new ArrayList<>();
+        String sql = "SELECT * FROM affectation WHERE id_candidat = ?";
+        Connection conn = Singleton.getConnection();
+        if (conn == null) return liste;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idCandidat);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    liste.add(mapResultSet(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur getByCandidat : " + e.getMessage());
+        }
+        return liste;
+    }
+
+    public boolean updateStatut(int idAffectation, String nouveauStatut) {
+        String sql = "UPDATE affectation SET statut = ? WHERE id_affectation = ?";
+        Connection conn = Singleton.getConnection();
+        if (conn == null) return false;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nouveauStatut);
+            stmt.setInt(2, idAffectation);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Erreur updateStatut Affectation : " + e.getMessage());
+        }
+        return false;
     }
 }

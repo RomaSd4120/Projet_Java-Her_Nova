@@ -5,6 +5,7 @@
 
 ## Présentation du Projet
 **AgriFlex** est une solution digitale binationale (Espace Candidat & Back-Office KIBA) conçue pour structurer, accélérer et optimiser la gestion de la main-d'œuvre agricole non qualifiée au Maroc. La plateforme répond aux enjeux de pénurie saisonnière et de gestion des rotations d'ouvriers entre les grandes régions agricoles (Souss-Massa, Gharb, Oriental, etc.).
+- **[Consulter le Cahier des Charges](https://github.com/RomaSd4120/Projet_Java-Her_Nova/blob/main/AgriFlex_Cahier_de_charge.pdf)**
 
 ---
 
@@ -38,11 +39,12 @@ Les maquettes ont été conçues selon une charte graphique professionnelle déd
 * **Standardisation :** Format Desktop 1440x1024 pour l'ensemble des écrans.
 
 ### Aperçu des Écrans Principaux :
-1. **Frame 1 — Connexion & OTP Candidat :** Interface d'accès rapide par téléphone.
-2. **Frame 2 — Espace Candidat :** Interface de disponibilité et propositions reçues.
-3. **Frame 3 — Dashboard KIBA Back-Office :** Vue d'ensemble opérationnelle et statistiques régionales.
-4. **Frame 4 — Matching & Création de Mission :** Module d'affectation intelligente et alerte SMS/WhatsApp.
-5. **Frame 5 — Planning & Vue Saisonnière :** Calendrier de rotation des équipes par culture.
+1. **Frame 1 — Accueil :** Page d'accueil principale présentant la plateforme AgriFlex et l'accès aux espaces utilisateurs.
+2. **Frame 2 — Connexion & OTP Candidat :** Interface d'accès rapide par téléphone.
+3. **Frame 3 — Espace Candidat :** Interface de disponibilité et propositions reçues.
+4. **Frame 4 — Dashboard KIBA Back-Office :** Vue d'ensemble opérationnelle et statistiques régionales.
+5. **Frame 5 — Matching & Création de Mission :** Module d'affectation intelligente et alerte SMS/WhatsApp.
+6. **Frame 6 — Planning & Vue Saisonnière :** Calendrier de rotation des équipes par culture.
 
 - **🔗 Lien du Prototype Interactif :** [Cliquez ici pour tester la maquette Figma]
   https://www.figma.com/design/gRzqx04jBctT5In5F3SNiH/Sans-titre?node-id=0-1&t=9wIYUNYjMCLGak5F-1
@@ -65,6 +67,67 @@ Les maquettes ont été conçues selon une charte graphique professionnelle déd
 │  ├── Frame5_Matching_Alertes.png
 │  └── Frame6_Planning_Saisonnier.png
 └── README.md                            # Synthèse et documentation du projet
+```
+
+---
+## Structure du Projet
+
+```text
+Projet_Java-Her_Nova/
+├── database/
+│   └── agriflex_db.sql                 # Script SQL de création de la base de données
+│
+├── src/
+│   ├── main/
+│   │   ├── java/com/agriflex/projet/
+│   │   │   ├── controller/             # Contrôleurs JavaFX (@FXML)
+│   │   │   │   ├── LoginController.java
+│   │   │   │   └── MissionController.java
+│   │   │   │
+│   │   │   ├── dao/                    # Couche d'accès aux données (JDBC / CRUD)
+│   │   │   │   ├── AffectationDAO.java
+│   │   │   │   ├── CodeOTPDAO.java
+│   │   │   │   ├── CompetenceDAO.java
+│   │   │   │   ├── DAO.java
+│   │   │   │   ├── DemandePersonnelDAO.java
+│   │   │   │   ├── DisponibiliteDAO.java
+│   │   │   │   ├── EntrepriseAgricoleDAO.java
+│   │   │   │   ├── NotificationDAO.java
+│   │   │   │   ├── RegionDAO.java
+│   │   │   │   ├── TravailleurDAO.java
+│   │   │   │   └── UtilisateurDAO.java
+│   │   │   │
+│   │   │   ├── model/                  # Entités / Modèles métier
+│   │   │   │   ├── Affectation.java
+│   │   │   │   ├── CodeOTP.java
+│   │   │   │   ├── Competence.java
+│   │   │   │   ├── DemandePersonnel.java
+│   │   │   │   ├── Disponibilite.java
+│   │   │   │   ├── EntrepriseAgricole.java
+│   │   │   │   ├── Notification.java
+│   │   │   │   ├── Region.java
+│   │   │   │   ├── Travailleur.java
+│   │   │   │   └── Utilisateur.java
+│   │   │   │
+│   │   │   ├── service/                # Logique métier (Authentification & Matching)
+│   │   │   │   ├── AuthService.java
+│   │   │   │   └── MatchingService.java
+│   │   │   │
+│   │   │   ├── util/                   # Utilitaires & Connexion BDD
+│   │   │   │   └── Singleton.java
+│   │   │   │
+│   │   │   └── App.java                # Point d'entrée principal de l'application JavaFX
+│   │   │
+│   │   └── resources/                  # Ressources & Configuration
+│   │       └── config.properties       # Paramètres de connexion MySQL
+│   │
+│   └── test/
+│       └── java/com/agriflex/projet/
+│           └── AppTest.java            # Tests unitaires et d'intégration (JUnit 4)
+│
+├── .gitignore                          # Fichiers et dossiers ignorés par Git
+├── pom.xml                             # Configuration et dépendances Apache Maven
+└── README.md                           # Documentation du projet
 ```
 
 ---

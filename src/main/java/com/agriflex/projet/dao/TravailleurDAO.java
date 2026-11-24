@@ -237,40 +237,62 @@ public class TravailleurDAO implements DAO<Travailleur> {
         return travailleur;
     }
 @Override
-public boolean create(Travailleur travailleur) {
-    if (travailleur == null) {
-        return false;
+    public boolean create(Travailleur travailleur) {
+        if (travailleur == null) {
+            return false;
+        }
+
+        String sql = "INSERT INTO travailleur "
+                + "(id_utilisateur, id_region, competences, experience, disponibilite, mobilite) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
+
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, travailleur.getIdUtilisateur());
+            if (travailleur.getIdRegion() == null) {
+                stmt.setNull(2, Types.INTEGER);
+            } else {
+                stmt.setInt(2, travailleur.getIdRegion());
+            }
+            stmt.setString(3, travailleur.getCompetences());
+            stmt.setString(4, travailleur.getExperience());
+            stmt.setString(5, travailleur.getDisponibilite());
+            stmt.setBoolean(6, travailleur.isMobilite());
+
+            if (stmt.executeUpdate() > 0) {
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        travailleur.setIdCandidat(rs.getInt(1));
+                    }
+                }
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            throw GestionnaireErreurBDD.traduireException("TravailleurDAO.create", e);
+        }
     }
 
-    String sql = "INSERT INTO travailleur "
-            + "(id_utilisateur, id_region, competences, experience, disponibilite, mobilite) "
-            + "VALUES (?, ?, ?, ?, ?, ?)";
+    public Travailleur findByUtilisateurId(int idUtilisateur) {
+        String sql = "SELECT * FROM travailleur WHERE id_utilisateur = ?";
+        Connection conn = Singleton.getConnection();
+        if (conn == null) return null;
 
-    Connection conn = Singleton.getConnectionOuLeverException("TravailleurDAO.create");
-
-    try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-        stmt.setInt(1, travailleur.getIdUtilisateur());
-        if (travailleur.getIdRegion() == null) {
-            stmt.setNull(2, Types.INTEGER);
-        } else {
-            stmt.setInt(2, travailleur.getIdRegion());
-        }
-        stmt.setString(3, travailleur.getCompetences());
-        stmt.setString(4, travailleur.getExperience());
-        stmt.setString(5, travailleur.getDisponibilite());
-        stmt.setBoolean(6, travailleur.isMobilite());
-
-        if (stmt.executeUpdate() > 0) {
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idUtilisateur);
+            try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    travailleur.setIdCandidat(rs.getInt(1));
+                    return mapResultSet(rs);
                 }
             }
-            return true;
+        } catch (SQLException e) {
+            System.err.println("Erreur findByUtilisateurId Travailleur : " + e.getMessage());
         }
-        return false;
-    } catch (SQLException e) {
-        throw GestionnaireErreurBDD.traduireException("TravailleurDAO.create", e);
+        return null;
     }
-}
-}
+ }
+  

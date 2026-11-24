@@ -5,9 +5,15 @@ import com.agriflex.projet.service.AuthService;
 import com.agriflex.projet.util.DatabaseException;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class LoginController {
     @FXML private TextField txtTelephone;
@@ -63,12 +69,6 @@ public class LoginController {
                 ? this.telephoneActif
                 : (txtTelephone != null ? txtTelephone.getText().trim() : "");
 
-        if (telephone.isEmpty() || codeSaisi.isEmpty()) {
-            afficherAlerte(Alert.AlertType.WARNING, "Champ requis",
-                    "Veuillez saisir le code OTP reçu.");
-            return;
-        }
-
         try {
             boolean valide = authService.validerOTP(telephone, codeSaisi);
             if (valide) {
@@ -77,13 +77,28 @@ public class LoginController {
                         : telephone;
                 afficherAlerte(Alert.AlertType.INFORMATION, "Succès",
                         "Bienvenue " + nomAffichage + " !");
-                // Ici : charger la vue suivante selon le rôle de utilisateurEnCours
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/espace_candidat.fxml"));
+                Parent root = loader.load();
+
+                CandidatController controller = loader.getController();
+                if (utilisateurEnCours != null) {
+                    controller.initData(utilisateurEnCours);
+                }
+
+                Stage stage = (Stage) txtCodeOtp.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("AgriFlex — Espace Candidat");
+                stage.show();
             } else {
                 afficherAlerte(Alert.AlertType.ERROR, "Code invalide",
                         "Le code OTP saisi est incorrect, expiré ou déjà utilisé.");
             }
         } catch (DatabaseException e) {
             afficherAlerte(Alert.AlertType.ERROR, "Erreur base de données", e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            afficherAlerte(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir l'Espace Candidat.");
         }
     }
 

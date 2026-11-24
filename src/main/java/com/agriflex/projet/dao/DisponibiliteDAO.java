@@ -22,7 +22,10 @@ public class DisponibiliteDAO implements DAO<Disponibilite> {
             return false;
         }
         String sql = "INSERT INTO disponibilite (id_travailleur, date_debut, date_fin, statut) VALUES (?, ?, ?, ?)";
-        Connection conn = Singleton.getConnectionOuLeverException("DisponibiliteDAO.create");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, disponibilite.getIdTravailleur());
@@ -58,7 +61,10 @@ public class DisponibiliteDAO implements DAO<Disponibilite> {
     @Override
     public Disponibilite findById(int id) {
         String sql = "SELECT * FROM disponibilite WHERE id_disponibilite = ?";
-        Connection conn = Singleton.getConnectionOuLeverException("DisponibiliteDAO.findById");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return null;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -74,7 +80,10 @@ public class DisponibiliteDAO implements DAO<Disponibilite> {
     public List<Disponibilite> findAll() {
         List<Disponibilite> liste = new ArrayList<>();
         String sql = "SELECT * FROM disponibilite ORDER BY date_debut DESC";
-        Connection conn = Singleton.getConnectionOuLeverException("DisponibiliteDAO.findAll");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return liste;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -93,7 +102,10 @@ public class DisponibiliteDAO implements DAO<Disponibilite> {
             return false;
         }
         String sql = "UPDATE disponibilite SET id_travailleur = ?, date_debut = ?, date_fin = ?, statut = ? WHERE id_disponibilite = ?";
-        Connection conn = Singleton.getConnectionOuLeverException("DisponibiliteDAO.update");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, disponibilite.getIdTravailleur());
@@ -121,7 +133,10 @@ public class DisponibiliteDAO implements DAO<Disponibilite> {
     @Override
     public boolean delete(int id) {
         String sql = "DELETE FROM disponibilite WHERE id_disponibilite = ?";
-        Connection conn = Singleton.getConnectionOuLeverException("DisponibiliteDAO.delete");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -134,7 +149,10 @@ public class DisponibiliteDAO implements DAO<Disponibilite> {
     @Override
     public boolean exists(int id) {
         String sql = "SELECT 1 FROM disponibilite WHERE id_disponibilite = ?";
-        Connection conn = Singleton.getConnectionOuLeverException("DisponibiliteDAO.exists");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -149,7 +167,10 @@ public class DisponibiliteDAO implements DAO<Disponibilite> {
     @Override
     public long count() {
         String sql = "SELECT COUNT(*) FROM disponibilite";
-        Connection conn = Singleton.getConnectionOuLeverException("DisponibiliteDAO.count");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return 0L;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -162,7 +183,10 @@ public class DisponibiliteDAO implements DAO<Disponibilite> {
     public List<Disponibilite> findByTravailleurId(int idTravailleur) {
         List<Disponibilite> liste = new ArrayList<>();
         String sql = "SELECT * FROM disponibilite WHERE id_travailleur = ? ORDER BY date_debut ASC";
-        Connection conn = Singleton.getConnectionOuLeverException("DisponibiliteDAO.findByTravailleurId");
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return liste;
+        }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, idTravailleur);
@@ -175,6 +199,47 @@ public class DisponibiliteDAO implements DAO<Disponibilite> {
         } catch (SQLException e) {
             throw GestionnaireErreurBDD.traduireException("DisponibiliteDAO.findByTravailleurId", e);
         }
+    }
+
+    // Récupérer uniquement les disponibilités actives ("Disponible")
+    public List<Disponibilite> findAllDisponibles() {
+        List<Disponibilite> liste = new ArrayList<>();
+        String sql = "SELECT * FROM disponibilite WHERE statut = 'Disponible'";
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return liste;
+        }
+
+        try (Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) {
+                liste.add(mapResultSet(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return liste;
+    }
+
+    // Compter les travailleurs selon leur statut ("Disponible" ou "Indisponible") pour les KPIs
+    public int countByStatut(String statut) {
+        String sql = "SELECT COUNT(*) FROM disponibilite WHERE statut = ?";
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return 0;
+        }
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, statut);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     private Disponibilite mapResultSet(ResultSet rs) throws SQLException {

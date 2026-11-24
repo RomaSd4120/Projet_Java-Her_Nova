@@ -19,16 +19,16 @@ public class CompetenceDAO implements DAO<Competence> {
         if (competence == null) {
             return false;
         }
-        String sql = "INSERT INTO competence (nom_competence, description, id_travailleur) VALUES (?, ?, ?)";
-        Connection conn = Singleton.getConnectionOuLeverException("CompetenceDAO.create");
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, competence.getNomCompetence());
-            stmt.setString(2, competence.getDescription());
-            stmt.setInt(3, competence.getIdTravailleur());
-
-            if (stmt.executeUpdate() > 0) {
-                try (ResultSet rs = stmt.getGeneratedKeys()) {
+        String sql = "INSERT INTO competence (libelle, id_candidat) VALUES (?, ?)";
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, competence.getNomCompetence());
+            ps.setInt(2, competence.getIdTravailleur());
+            if (ps.executeUpdate() > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
                         competence.setIdCompetence(rs.getInt(1));
                     }
@@ -44,13 +44,18 @@ public class CompetenceDAO implements DAO<Competence> {
     @Override
     public Competence findById(int id) {
         String sql = "SELECT * FROM competence WHERE id_competence = ?";
-        Connection conn = Singleton.getConnectionOuLeverException("CompetenceDAO.findById");
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next() ? mapResultSet(rs) : null;
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return null;
+        }
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSet(rs);
+                }
             }
+            return null;
         } catch (SQLException e) {
             throw GestionnaireErreurBDD.traduireException("CompetenceDAO.findById", e);
         }
@@ -59,11 +64,13 @@ public class CompetenceDAO implements DAO<Competence> {
     @Override
     public List<Competence> findAll() {
         List<Competence> liste = new ArrayList<>();
-        String sql = "SELECT * FROM competence ORDER BY nom_competence";
-        Connection conn = Singleton.getConnectionOuLeverException("CompetenceDAO.findAll");
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        String sql = "SELECT * FROM competence";
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return liste;
+        }
+        try (Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
                 liste.add(mapResultSet(rs));
             }
@@ -78,15 +85,16 @@ public class CompetenceDAO implements DAO<Competence> {
         if (competence == null) {
             return false;
         }
-        String sql = "UPDATE competence SET nom_competence = ?, description = ?, id_travailleur = ? WHERE id_competence = ?";
-        Connection conn = Singleton.getConnectionOuLeverException("CompetenceDAO.update");
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, competence.getNomCompetence());
-            stmt.setString(2, competence.getDescription());
-            stmt.setInt(3, competence.getIdTravailleur());
-            stmt.setInt(4, competence.getIdCompetence());
-            return stmt.executeUpdate() > 0;
+        String sql = "UPDATE competence SET libelle = ?, id_candidat = ? WHERE id_competence = ?";
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, competence.getNomCompetence());
+            ps.setInt(2, competence.getIdTravailleur());
+            ps.setInt(3, competence.getIdCompetence());
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw GestionnaireErreurBDD.traduireException("CompetenceDAO.update", e);
         }
@@ -95,11 +103,13 @@ public class CompetenceDAO implements DAO<Competence> {
     @Override
     public boolean delete(int id) {
         String sql = "DELETE FROM competence WHERE id_competence = ?";
-        Connection conn = Singleton.getConnectionOuLeverException("CompetenceDAO.delete");
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            return stmt.executeUpdate() > 0;
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw GestionnaireErreurBDD.traduireException("CompetenceDAO.delete", e);
         }
@@ -108,8 +118,10 @@ public class CompetenceDAO implements DAO<Competence> {
     @Override
     public boolean exists(int id) {
         String sql = "SELECT 1 FROM competence WHERE id_competence = ?";
-        Connection conn = Singleton.getConnectionOuLeverException("CompetenceDAO.exists");
-
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return false;
+        }
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -123,8 +135,10 @@ public class CompetenceDAO implements DAO<Competence> {
     @Override
     public long count() {
         String sql = "SELECT COUNT(*) FROM competence";
-        Connection conn = Singleton.getConnectionOuLeverException("CompetenceDAO.count");
-
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return 0L;
+        }
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             return rs.next() ? rs.getLong(1) : 0L;
@@ -133,30 +147,32 @@ public class CompetenceDAO implements DAO<Competence> {
         }
     }
 
-    public List<Competence> findByTravailleurId(int idTravailleur) {
+    public List<Competence> getByTravailleur(int idTravailleur) {
         List<Competence> liste = new ArrayList<>();
-        String sql = "SELECT * FROM competence WHERE id_travailleur = ? ORDER BY nom_competence";
-        Connection conn = Singleton.getConnectionOuLeverException("CompetenceDAO.findByTravailleurId");
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, idTravailleur);
-            try (ResultSet rs = stmt.executeQuery()) {
+        String sql = "SELECT * FROM competence WHERE id_candidat = ?";
+        Connection conn = Singleton.getConnection();
+        if (conn == null) {
+            return liste;
+        }
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idTravailleur);
+            try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     liste.add(mapResultSet(rs));
                 }
             }
             return liste;
         } catch (SQLException e) {
-            throw GestionnaireErreurBDD.traduireException("CompetenceDAO.findByTravailleurId", e);
+            throw GestionnaireErreurBDD.traduireException("CompetenceDAO.getByTravailleur", e);
         }
     }
 
     private Competence mapResultSet(ResultSet rs) throws SQLException {
-        Competence c = new Competence();
-        c.setIdCompetence(rs.getInt("id_competence"));
-        c.setNomCompetence(rs.getString("nom_competence"));
-        c.setDescription(rs.getString("description"));
-        c.setIdTravailleur(rs.getInt("id_travailleur"));
-        return c;
+        return new Competence(
+            rs.getInt("id_competence"),
+            rs.getString("libelle"),
+            "",
+            rs.getInt("id_candidat")
+        );
     }
 }
