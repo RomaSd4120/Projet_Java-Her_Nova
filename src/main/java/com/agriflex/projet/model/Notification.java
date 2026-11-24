@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class Notification {
     private int idNotification;
     private int idCandidat;
-    private Integer idMission; // Integer autorise la valeur null (pour ON DELETE SET NULL)
+    private Integer idMission;
     private String canal;
     private String message;
     private LocalDateTime dateEnvoi;
