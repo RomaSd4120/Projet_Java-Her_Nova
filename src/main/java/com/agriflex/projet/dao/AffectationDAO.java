@@ -206,4 +206,36 @@ public class AffectationDAO implements DAO<Affectation> {
 
         return affectation;
     }
+    public List<Affectation> getByCandidat(int idCandidat) {
+        List<Affectation> liste = new ArrayList<>();
+        String sql = "SELECT * FROM affectation WHERE id_candidat = ?";
+        Connection conn = Singleton.getConnection();
+        if (conn == null) return liste;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idCandidat);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    liste.add(mapResultSet(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur getByCandidat : " + e.getMessage());
+        }
+        return liste;
+    }
+
+    public boolean updateStatut(int idAffectation, String nouveauStatut) {
+        String sql = "UPDATE affectation SET statut = ? WHERE id_affectation = ?";
+        Connection conn = Singleton.getConnection();
+        if (conn == null) return false;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nouveauStatut);
+            stmt.setInt(2, idAffectation);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Erreur updateStatut Affectation : " + e.getMessage());
+        }
+        return false;
+    }
+
 }

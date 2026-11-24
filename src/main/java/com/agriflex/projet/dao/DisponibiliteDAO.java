@@ -143,4 +143,41 @@ public class DisponibiliteDAO implements DAO<Disponibilite> {
             return false;
         }
     }
+    // Récupérer uniquement les disponibilités actives ("Disponible")
+    public List<Disponibilite> findAllDisponibles() {
+        List<Disponibilite> liste = new ArrayList<>();
+        String sql = "SELECT * FROM disponibilite WHERE statut = 'Disponible'";
+        try (Connection conn = Singleton.getConnection();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) {
+                liste.add(new Disponibilite(
+                    rs.getInt("id_disponibilite"),
+                    rs.getInt("id_travailleur"),
+                    rs.getDate("date_debut").toLocalDate(),
+                    rs.getDate("date_fin").toLocalDate(),
+                    rs.getString("statut")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return liste;
+    }
+
+    // Compter les travailleurs selon leur statut ("Disponible" ou "Indisponible") pour les KPIs
+    public int countByStatut(String statut) {
+        String sql = "SELECT COUNT(*) FROM disponibilite WHERE statut = ?";
+        try (Connection conn = Singleton.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, statut);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

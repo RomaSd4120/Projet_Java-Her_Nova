@@ -11,12 +11,12 @@ public class CompetenceDAO implements DAO<Competence> {
 
     @Override
     public boolean create(Competence competence) {
-        String sql = "INSERT INTO competence (nom_competence, description, id_travailleur) VALUES (?, ?, ?)";
-        try (Connection conn = Singleton.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        String sql = "INSERT INTO competence (libelle, id_candidat) VALUES (?, ?)";
+        Connection conn = Singleton.getConnection();
+        if (conn == null) return false;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, competence.getNomCompetence());
-            ps.setString(2, competence.getDescription());
-            ps.setInt(3, competence.getIdTravailleur());
+            ps.setInt(2, competence.getIdTravailleur());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -27,17 +27,19 @@ public class CompetenceDAO implements DAO<Competence> {
     @Override
     public Competence findById(int id) {
         String sql = "SELECT * FROM competence WHERE id_competence = ?";
-        try (Connection conn = Singleton.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        Connection conn = Singleton.getConnection();
+        if (conn == null) return null;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return new Competence(
-                    rs.getInt("id_competence"),
-                    rs.getString("nom_competence"),
-                    rs.getString("description"),
-                    rs.getInt("id_travailleur")
-                );
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Competence(
+                        rs.getInt("id_competence"),
+                        rs.getString("libelle"),
+                        "",
+                        rs.getInt("id_candidat")
+                    );
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -49,15 +51,16 @@ public class CompetenceDAO implements DAO<Competence> {
     public List<Competence> findAll() {
         List<Competence> liste = new ArrayList<>();
         String sql = "SELECT * FROM competence";
-        try (Connection conn = Singleton.getConnection();
-             Statement st = conn.createStatement();
+        Connection conn = Singleton.getConnection();
+        if (conn == null) return liste;
+        try (Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
                 liste.add(new Competence(
                     rs.getInt("id_competence"),
-                    rs.getString("nom_competence"),
-                    rs.getString("description"),
-                    rs.getInt("id_travailleur")
+                    rs.getString("libelle"),
+                    "",
+                    rs.getInt("id_candidat")
                 ));
             }
         } catch (SQLException e) {
@@ -68,13 +71,13 @@ public class CompetenceDAO implements DAO<Competence> {
 
     @Override
     public boolean update(Competence competence) {
-        String sql = "UPDATE competence SET nom_competence = ?, description = ?, id_travailleur = ? WHERE id_competence = ?";
-        try (Connection conn = Singleton.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        String sql = "UPDATE competence SET libelle = ?, id_candidat = ? WHERE id_competence = ?";
+        Connection conn = Singleton.getConnection();
+        if (conn == null) return false;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, competence.getNomCompetence());
-            ps.setString(2, competence.getDescription());
-            ps.setInt(3, competence.getIdTravailleur());
-            ps.setInt(4, competence.getIdCompetence());
+            ps.setInt(2, competence.getIdTravailleur());
+            ps.setInt(3, competence.getIdCompetence());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -85,8 +88,9 @@ public class CompetenceDAO implements DAO<Competence> {
     @Override
     public boolean delete(int idCompetence) {
         String sql = "DELETE FROM competence WHERE id_competence = ?";
-        try (Connection conn = Singleton.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        Connection conn = Singleton.getConnection();
+        if (conn == null) return false;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, idCompetence);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -104,21 +108,24 @@ public class CompetenceDAO implements DAO<Competence> {
     public boolean exists(int id) {
         return findById(id) != null;
     }
+
     // Méthode spécifique pour récupérer les compétences d'un travailleur
     public List<Competence> getByTravailleur(int idTravailleur) {
         List<Competence> liste = new ArrayList<>();
-        String sql = "SELECT * FROM competence WHERE id_travailleur = ?";
-        try (Connection conn = Singleton.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        String sql = "SELECT * FROM competence WHERE id_candidat = ?";
+        Connection conn = Singleton.getConnection();
+        if (conn == null) return liste;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, idTravailleur);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                liste.add(new Competence(
-                    rs.getInt("id_competence"),
-                    rs.getString("nom_competence"),
-                    rs.getString("description"),
-                    rs.getInt("id_travailleur")
-                ));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    liste.add(new Competence(
+                        rs.getInt("id_competence"),
+                        rs.getString("libelle"),
+                        "",
+                        rs.getInt("id_candidat")
+                    ));
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
